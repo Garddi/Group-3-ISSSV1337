@@ -1,0 +1,35 @@
+---
+title: "Day 1 considerations data and process"
+author: "me"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Day 1 Considerations on data and process
+
+## *Way forward*
+
+  - use stortingsscrape to create a dataset (structuring text data)
+    - 2011 onwards
+    - 1987 brundtland rapporten
+  - count mentions of keywords (create keyword list)
+    - 4.7
+    - UBU
+    - etc.
+  - clean dataset and supervise algorithms to classify sentiments in mentions
+  - three-stage process:
+    1. counting words and achieving overview
+    2. connecting words to cases and MPs
+    3. supervised algorithm on sentiments 
+  
+  ## *To do*
+  - message UNA about keywords/interests; main efforts and goals (how shall we measure their success - just mentions?)
+  - ask UNA about specific "lovforslag" the lobbied
+  
+  ## *Data*
+  - Data on decisions (case id, MP, mention)
+  
