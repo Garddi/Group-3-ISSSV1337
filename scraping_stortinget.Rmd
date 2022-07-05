@@ -1,0 +1,92 @@
+---
+title: "scraping_stortinget"
+output: html_document
+date: '2022-07-05'
+---
+
+```{r}
+library(rvest)
+
+
+# sidenumemr, som kan endres
+ page <- 1
+# lager en string med url og sidenummer
+url <- paste0("https://www.stortinget.no/no/sok/?query=FN-sambandet&sorting=relevance&page=", page)
+# ser på resultatet
+url
+
+```
+```{r}
+# kombinere 
+filename <- paste0("./links/FN-sam_storting", page, ".html")
+# inspecting the result
+filename
+```
+
+```{r}
+# laster ned nettsiden lokalt på pcen
+xml2::download_html(
+  url = url, 
+  file = filename)
+```
+
+```{r}
+# laster filen
+FN <- read_html(x = filename, encoding = "UTF-8")
+
+FN
+```
+
+```{r}
+# Read directly from webpage
+FN_2 <- read_html("https://www.stortinget.no/no/sok/?query=FN-sambandet&sorting=relevance&page=1") %>% 
+  html_nodes("#main-content") %>% 
+  html_text
+
+FN_2
+```
+
+
+```{r}
+
+# Scrape alle linkene på nettsiden 
+library(stringr)
+
+links <- read_html("./links/FN-sam_storting1.html") %>%
+  html_nodes("#main-content > div.search-page-react > div:nth-child(5)") %>%
+  html_elements("a") %>%
+  html_attr("href") %>%
+  str_extract("/redirect.*") %>% # Gathers only the strings that start with "/wiki", then followed by anything (.*)
+  na.omit() %>% # All other string become NA, we remove these
+  str_c("https://sok.stortinget.no/redirect", .) # str_c pastes together two strings, we do this in order to get the full webpage
+
+```
+
+
+```{r}
+
+class(links) # What sort of vector is "links"?
+
+links # What does the links object contain?
+
+```
+
+```{r}
+
+# Scrape alle linkene på nettsiden 
+library(stringr)
+
+links <- read_html("./links/FN-sam_storting1.html") %>%
+  html_node("div > div > h2") %>%
+  html_elements("a") %>%
+  html_attr("href") %>%
+  str_c("https://sok.stortinget.no/redirect", .) # str_c pastes together two strings, we do this in order to get the full webpage
+
+```
+
+
+
+
+
+
+
