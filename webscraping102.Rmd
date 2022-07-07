@@ -1,0 +1,63 @@
+---
+title: "Scraping102"
+output: html_document
+date: '2022-07-07'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+download.file("https://www.stortinget.no/no/sok/?query=FN-sambandet&sorting=relevance&page=1", 
+                destfile = "./links/Stortinget.html")
+# Download one html-file after another into the folder specified in folder
+
+```
+
+## Call the webpage
+
+Step 2: Call the webpage using `read_html`
+
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+library(tidyverse)
+library(rvest)
+
+# Read from your downloaded file
+read_html("./links/Stortinget.html") 
+```
+
+```{r}
+
+read_html("./links/Stortinget.html") %>%
+  html_node("#main-content > div.search-page-react > div:nth-child(5) > div > div")
+
+```
+
+
+## Extract the text from the node
+
+```{r}
+read_html("./links/Stortinget.html") %>%
+  html_node("#main-content > div.search-page-react > div:nth-child(5) > div > div") %>%
+  html_text2() # or html_text2()
+```
+
+
+
+```{r, echo = FALSE}
+read_html("./links/Stortinget.html") %>%
+  html_node("#main-content > div.search-page-react > div:nth-child(5) > div > div") %>%
+  html_text() %>%
+  kableExtra::kable(col.names = "")
+#main-content > div.search-page-react > div:nth-child(5) > div > div
+```
+
+
+
+
+
+
+
