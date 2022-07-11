@@ -95,10 +95,23 @@ for(x in unique(sessions_storting$id)){
   #paste0("stortingsporsmal", x) = rbind(a, b, c)
 }
 
-a <- get_session_questions(sessionid = "2021-2022", q_type = "interpellasjoner", status = NA, good_manners = 0)
-b <- get_session_questions(sessionid = "2021-2022", q_type = "sporretimesporsmal", status = NA, good_manners = 0)
-
-q <- rbind(a, b)
-
 ## Next step is to take these id's from the resulting dataframes, using 
 ## get_question, to get all the actual text of responses. 
+
+questionlista <- do.call("rbind", a)
+questionlistb <- do.call("rbind", b)
+questionlistc <- do.call("rbind", c)
+
+clist <- list(questionlista, questionlistb, questionlistc)
+
+questionlist <- do.call("rbind", clist)
+
+d <- list()
+
+for(x in unique(questionlist$id)){
+  it <- 100*(which(unique(questionlist$id) == x) / length(unique(questionlist$id)))
+  cat(paste0(sprintf("Progress: %.4f%%             ", it), "\r"))
+  
+  d[[x]] <- get_question(questionid = x, good_manners = 0)
+  #paste0("stortingsporsmal", x) = rbind(a, b, c)
+}
