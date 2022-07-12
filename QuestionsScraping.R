@@ -28,6 +28,11 @@ get_session_publications(sessionid = "2007-2008", type = "referat", good_manners
 enpub <- get_publication(publicationid = "h080130", good_manners = 0)
 
 
+vedtak <- get_session_decisions(sessionid = "2021-2022", good_manners = 0)
+
+vedtak2 <- get_vote(caseid = "40029298", good_manners = 0)
+
+
 
 ##### ------ Code Test ------
 
@@ -98,11 +103,16 @@ for(x in unique(sessions_storting$id)){
 ## Next step is to take these id's from the resulting dataframes, using 
 ## get_question, to get all the actual text of responses. 
 
+## Unlisting all of the resulting lists, they are lists of identically 
+## sized dataframes.
+
 questionlista <- do.call("rbind", a)
 questionlistb <- do.call("rbind", b)
 questionlistc <- do.call("rbind", c)
 
 clist <- list(questionlista, questionlistb, questionlistc)
+
+## Combining all for a dataframe we can fetch 
 
 questionlist <- do.call("rbind", clist)
 
@@ -115,3 +125,25 @@ for(x in unique(questionlist$id)){
   d[[x]] <- get_question(questionid = x, good_manners = 0)
   #paste0("stortingsporsmal", x) = rbind(a, b, c)
 }
+
+
+questiontext <- do.call("rbind", d)
+## All questions received and combined, ready for analysis.
+
+## Next step is to find the relevant keywords, filter questions and ascertain
+## the dates and attached documents that they exist in. 
+
+sum(str_detect(questiontext$question_text, "FN-sambandet"))
+
+questiontext$question_text[str_which(questiontext$question_text, "4.7")]
+
+str_detect(questiontext$answer_text,"Samfunnsøkonomisk")
+
+questionsFN <- questiontext %>%
+  filter(str_detect(questiontext$question_text, "FN-sambandet"))
+
+questionsFN$answer_text
+
+save(questionlist, file = "Question_Data/MetadataQuestionList.Rdata")
+save(questiontext, file = "Question_Data/All_Questions.Rdata")
+
