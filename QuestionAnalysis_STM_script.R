@@ -13,28 +13,53 @@ library(quanteda)
 library(stm)
 library(tidyr)
 
+### This script provides an outline into a structured topic modelling 
+### It can be modified to run more or less documents.
+
+
+## First step is to clean out our data, I try here to limit the amount
+## of columns in the dataframe i work with, so it takes less space
+## in the resulting token dataset.
+
+## since the answers are in the same rows as the questions, I first
+## isolate the answer texts.
 
 answerlist <- questiontext %>%
   select(id, text = answer_text, title, type, question_from_id, 
          qustion_to_id)
+
+## Dropping the observations with no text, note that no text in 
+## Stortingscrape is coded as empty string, not as an NA
 
 answerlist <- answerlist %>%
   mutate(notapplicable = ifelse(text == "", NA, 1)) %>%
   drop_na(notapplicable) %>%
   select(-notapplicable)
 
+## Limiting the dataset
+
 questionshort <- questiontext %>%
   select(id, text = question_text, title, type, question_from_id,
          qustion_to_id)
 
+## Binding the sets together, so I have one dataframe with complete
+## texts from either answers or questions. **OF NOTE** I should probably
+## have added a string to the id's so that i separate answer texts 
+## from question texts, given their identical id.
+
 assembledtextquestions <- rbind(questionshort, answerlist)
 
+## removing reduntant objects
+
 rm(answerlist, questionlist, questionshort, questiontext)
+
+## First i turn all strings into lower case
 
 assembledtextquestions <- assembledtextquestions %>% 
   mutate(text_l = str_to_lower(text))
 
-sum(str_detect(assembledtextquestions$text_l))
+## Before tokenizing I create a stopword dataset, I add br, because it
+## is not properly removed from some observations. 
 
 stop_words <- get_stopwords(language = "no")
 
@@ -42,18 +67,25 @@ removeword <- data.frame(word = "br", lexicon = "own library")
 
 stop_words <- rbind(stop_words, removeword)
 
+## Next I tokennize the text, this takes a moment. 
+
 questiontokens <- assembledtextquestions %>%
   unnest_tokens(input = text, # Which variable to get the text from
                 output = word, # What the new variable should be called
                 token = "words") # Type of tokens to split the text into
 
+## Removing all stopwords from my stop words book
+
 questiontokens <- questiontokens %>%
   anti_join(stop_words, by = "word") # Joining against the stopwords dataframe to get rid of cells with stopwords
 
-questiontokens
+
+## Brief category investigation, stock companies are frequent
 
 questiontokens %>%
   count(id, word, sort = TRUE)
+
+## Stemming the tokens, note specification of language is needed
 
 questiontokens <- questiontokens %>%
   mutate(stem = wordStem(word, language = "norwegian"))
@@ -63,6 +95,9 @@ questiontokens_dfm <- questiontokens %>%
   cast_dfm(id, # Specify the douments in your analysis (becoming the rows)
            stem, # Specify the tokens in your analysis (becoming the columns)
            count) # Specify the number of times each token shows up in each document (becoming the cells)
+
+## Saving these objects, ready for analysis, note that the tokens dataframe
+## is far too large to be uploaded to GitHub
 
 save(questiontokens_dfm, file = "Question_Data/questionsdfm.Rdata")
 save(questiontokens, file = "Question_Data/questiontokens.Rdata")
@@ -105,8 +140,15 @@ rm(questiontokens_lda, questiontopics, questiontopics_group)
 
 ###### ------------ Structured topical model with K = 75 -----------
 
+## Forewarning, this step takes some 3-4 hours to complete
+## depending on your pc's processing power
+
 questiontokens_lda_75 <- stm(questiontokens_dfm,
                              init.type = "LDA",
                              K = 75,
                              seed = 910,
-                             verbose = TRUE)
+                             verbose = TRUE, 
+                             max.em.its = 100, ## You can adjust these numbers
+                             emtol = 1e-5) ## However, too high numbers will drastically increase computing time
+
+
