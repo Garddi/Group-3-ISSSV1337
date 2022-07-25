@@ -152,3 +152,240 @@ questiontokens_lda_75 <- stm(questiontokens_dfm,
                              emtol = 1e-5) ## However, too high numbers will drastically increase computing time
 
 
+save(questiontokens_lda_75, file = "Question_Analysis/QuestionSTM_K75.Rdata")
+
+
+questiontopics_75 <- tidy(questiontokens_lda_75, 
+                       matrix = "beta")
+
+
+questiontopics_group_75 <- questiontopics_75 %>%
+  group_by(topic) %>% # Getting the top term per topic, thus using group_by
+  slice_max(beta, n = 10) %>% # Fetching the 10 terms with the highest beta
+  ungroup() # Ungrouping to get the dataframe back to normal
+
+questiontopics_group_75
+
+questiontopics_group_75_1 <- questiontopics_group_75 %>%
+  filter(topic %in% c(1:8))
+
+questiontopics_group_75_2 <- questiontopics_group_75 %>%
+  filter(topic %in% c(9:15))
+
+questiontopics_group_75_3 <- questiontopics_group_75 %>%
+  filter(topic %in% c(16:23))
+
+questiontopics_group_75_4 <- questiontopics_group_75 %>%
+  filter(topic %in% c(24:30))
+
+questiontopics_group_75_5 <- questiontopics_group_75 %>%
+  filter(topic %in% c(31:38))
+
+questiontopics_group_75_6 <- questiontopics_group_75 %>%
+  filter(topic %in% c(39:45))
+
+questiontopics_group_75_7 <- questiontopics_group_75 %>%
+  filter(topic %in% c(46:53))
+
+questiontopics_group_75_8 <- questiontopics_group_75 %>%
+  filter(topic %in% c(54:60))
+
+questiontopics_group_75_9 <- questiontopics_group_75 %>%
+  filter(topic %in% c(61:68))
+
+questiontopics_group_75_10 <- questiontopics_group_75 %>%
+  filter(topic %in% c(68:75))
+
+
+questiontopics_group_75_1 %>%
+  ggplot(aes(term, beta, fill = topic)) + # Plotting the terms, the beta values (probabilities) and coloring them after topic
+  geom_bar(stat = "identity") + # Creating a bar chart and making the y-axis the same as beta
+  facet_wrap( ~ topic, # # Make different plots for each topic
+              ncol = 3, # Arrange them in three columns
+              scales = "free") + # Make the y-axes so that they can range freely, i.e. do not depend on each other
+  labs(x = "", y = "Word-Topic probability") + # Adding names to the x-axis and y-axis
+  theme_bw() + # Making the color background white
+  theme(legend.position = "none", # Removing the legend
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) # Making the text on the x-axis appear vertically
+
+
+questiontopics_group_75_2 %>%
+  ggplot(aes(term, beta, fill = topic)) + # Plotting the terms, the beta values (probabilities) and coloring them after topic
+  geom_bar(stat = "identity") + # Creating a bar chart and making the y-axis the same as beta
+  facet_wrap( ~ topic, # # Make different plots for each topic
+              ncol = 3, # Arrange them in three columns
+              scales = "free") + # Make the y-axes so that they can range freely, i.e. do not depend on each other
+  labs(x = "", y = "Word-Topic probability") + # Adding names to the x-axis and y-axis
+  theme_bw() + # Making the color background white
+  theme(legend.position = "none", # Removing the legend
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) # Making the text on the x-axis appear vertically
+
+questiontopics_group_75_3 %>%
+  ggplot(aes(term, beta, fill = topic)) + # Plotting the terms, the beta values (probabilities) and coloring them after topic
+  geom_bar(stat = "identity") + # Creating a bar chart and making the y-axis the same as beta
+  facet_wrap( ~ topic, # # Make different plots for each topic
+              ncol = 3, # Arrange them in three columns
+              scales = "free") + # Make the y-axes so that they can range freely, i.e. do not depend on each other
+  labs(x = "", y = "Word-Topic probability") + # Adding names to the x-axis and y-axis
+  theme_bw() + # Making the color background white
+  theme(legend.position = "none", # Removing the legend
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) # Making the text on the x-axis appear vertically
+
+questiontopics_group_75_4 %>%
+  ggplot(aes(term, beta, fill = topic)) + # Plotting the terms, the beta values (probabilities) and coloring them after topic
+  geom_bar(stat = "identity") + # Creating a bar chart and making the y-axis the same as beta
+  facet_wrap( ~ topic, # # Make different plots for each topic
+              ncol = 3, # Arrange them in three columns
+              scales = "free") + # Make the y-axes so that they can range freely, i.e. do not depend on each other
+  labs(x = "", y = "Word-Topic probability") + # Adding names to the x-axis and y-axis
+  theme_bw() + # Making the color background white
+  theme(legend.position = "none", # Removing the legend
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) # Making the text on the x-axis appear vertically
+
+questiontopics_group_75_5 %>%
+  ggplot(aes(term, beta, fill = topic)) + # Plotting the terms, the beta values (probabilities) and coloring them after topic
+  geom_bar(stat = "identity") + # Creating a bar chart and making the y-axis the same as beta
+  facet_wrap( ~ topic, # # Make different plots for each topic
+              ncol = 3, # Arrange them in three columns
+              scales = "free") + # Make the y-axes so that they can range freely, i.e. do not depend on each other
+  labs(x = "", y = "Word-Topic probability") + # Adding names to the x-axis and y-axis
+  theme_bw() + # Making the color background white
+  theme(legend.position = "none", # Removing the legend
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) # Making the text on the x-axis appear vertically
+
+questiontopics_group_75_6 %>%
+  ggplot(aes(term, beta, fill = topic)) + # Plotting the terms, the beta values (probabilities) and coloring them after topic
+  geom_bar(stat = "identity") + # Creating a bar chart and making the y-axis the same as beta
+  facet_wrap( ~ topic, # # Make different plots for each topic
+              ncol = 3, # Arrange them in three columns
+              scales = "free") + # Make the y-axes so that they can range freely, i.e. do not depend on each other
+  labs(x = "", y = "Word-Topic probability") + # Adding names to the x-axis and y-axis
+  theme_bw() + # Making the color background white
+  theme(legend.position = "none", # Removing the legend
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) # Making the text on the x-axis appear vertically
+
+questiontopics_group_75_7 %>%
+  ggplot(aes(term, beta, fill = topic)) + # Plotting the terms, the beta values (probabilities) and coloring them after topic
+  geom_bar(stat = "identity") + # Creating a bar chart and making the y-axis the same as beta
+  facet_wrap( ~ topic, # # Make different plots for each topic
+              ncol = 3, # Arrange them in three columns
+              scales = "free") + # Make the y-axes so that they can range freely, i.e. do not depend on each other
+  labs(x = "", y = "Word-Topic probability") + # Adding names to the x-axis and y-axis
+  theme_bw() + # Making the color background white
+  theme(legend.position = "none", # Removing the legend
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) # Making the text on the x-axis appear vertically
+
+questiontopics_group_75_8 %>%
+  ggplot(aes(term, beta, fill = topic)) + # Plotting the terms, the beta values (probabilities) and coloring them after topic
+  geom_bar(stat = "identity") + # Creating a bar chart and making the y-axis the same as beta
+  facet_wrap( ~ topic, # # Make different plots for each topic
+              ncol = 3, # Arrange them in three columns
+              scales = "free") + # Make the y-axes so that they can range freely, i.e. do not depend on each other
+  labs(x = "", y = "Word-Topic probability") + # Adding names to the x-axis and y-axis
+  theme_bw() + # Making the color background white
+  theme(legend.position = "none", # Removing the legend
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) # Making the text on the x-axis appear vertically
+
+questiontopics_group_75_9 %>%
+  ggplot(aes(term, beta, fill = topic)) + # Plotting the terms, the beta values (probabilities) and coloring them after topic
+  geom_bar(stat = "identity") + # Creating a bar chart and making the y-axis the same as beta
+  facet_wrap( ~ topic, # # Make different plots for each topic
+              ncol = 3, # Arrange them in three columns
+              scales = "free") + # Make the y-axes so that they can range freely, i.e. do not depend on each other
+  labs(x = "", y = "Word-Topic probability") + # Adding names to the x-axis and y-axis
+  theme_bw() + # Making the color background white
+  theme(legend.position = "none", # Removing the legend
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) # Making the text on the x-axis appear vertically
+
+questiontopics_group_75_10 %>%
+  ggplot(aes(term, beta, fill = topic)) + # Plotting the terms, the beta values (probabilities) and coloring them after topic
+  geom_bar(stat = "identity") + # Creating a bar chart and making the y-axis the same as beta
+  facet_wrap( ~ topic, # # Make different plots for each topic
+              ncol = 3, # Arrange them in three columns
+              scales = "free") + # Make the y-axes so that they can range freely, i.e. do not depend on each other
+  labs(x = "", y = "Word-Topic probability") + # Adding names to the x-axis and y-axis
+  theme_bw() + # Making the color background white
+  theme(legend.position = "none", # Removing the legend
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) # Making the text on the x-axis appear vertically
+
+questiontokens_lda_75
+
+
+question_doc_prob_75 <- tidy(questiontokens_lda_75, matrix = "gamma", # Calculating document probabilities
+                    document_names = rownames(questiontokens_dfm)) # Adding the names of the songs to the dataframe
+
+
+top_docs <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  slice_max(gamma, n = 3) # Find the max value
+
+topic_assignment <- top_docs %>%
+  group_by(document) %>%
+  summarise(TopTopic = first(topic),
+            SecTopic = nth(topic, 2),
+            ThirdTopic = nth(topic, 3),
+            TopGamma = first(gamma),
+            SecGamma = nth(gamma, 2), 
+            ThirdGamma = nth(gamma, 3))
+
+topic_assignment <- topic_assignment %>%
+  rename(id = document)
+
+## Merging this with the relevant questions 
+
+load("Question_Data/All_Questions.Rdata")
+
+questiontext <- questiontext %>%
+  mutate(text_q_l = str_to_lower(question_text),
+         text_a_l = str_to_lower(answer_text))
+
+textrelevance <- questiontext %>%
+  filter(str_detect(text_q_l, "fn-sambandet") |
+           str_detect(text_q_l, "ubu") |
+           str_detect(text_q_l, "utdanning for bærekraftig utvikling") |
+           str_detect(text_q_l, "unicef") | 
+           str_detect(text_q_l, "wfp") | 
+           str_detect(text_q_l, "unaids") |
+           str_detect(text_a_l, "fn-sambandet") |
+           str_detect(text_a_l, "ubu") |
+           str_detect(text_a_l, "utdanning for bærekraftig utvikling") |
+           str_detect(text_a_l, "unicef") | 
+           str_detect(text_a_l, "wfp") | 
+           str_detect(text_a_l, "unaids"))
+
+textrelevance <- left_join(textrelevance, topic_assignment, by = "id")
+
+table(textrelevance$TopTopic)
+
+table(textrelevance$SecTopic)
+
+table(textrelevance$ThirdTopic)
+
+textrelevancemeta <- questionlist %>%
+  filter(id %in% textrelevance$id)
+
+
+###### -------- plotting some results -------
+
+textrelevance <- textrelevance %>%
+  mutate(priority_word_level = case_when(
+    str_detect(text_q_l, "fn-sambandet") ~ "1",
+    str_detect(text_a_l, "fn-sambandet") ~ "1", 
+    str_detect(text_q_l, "ubu") ~ "2", 
+    str_detect(text_a_l, "ubu") ~ "2",
+    str_detect(text_q_l, "utdanning for bærekraftig utvikling") ~ "2",
+    str_detect(text_a_l, "utdanning for bærekraftig utvikling") ~ "2",
+    str_detect(text_q_l, "unicef") ~ "3",
+    str_detect(text_a_l, "unicef") ~ "3",
+    str_detect(text_q_l, "wfp") ~ "3",
+    str_detect(text_a_l, "wfp") ~ "3",
+    str_detect(text_q_l, "unaids") ~ "3", 
+    str_detect(text_a_l, "unaids") ~ "3"
+  ))
+
+
+ggplot(textrelevance, aes(x = session_id, fill = priority_word_level)) + 
+  geom_bar() + 
+  theme_bw()
+
+get_topics()
