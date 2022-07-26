@@ -12,6 +12,7 @@ library(tidytext)
 library(quanteda)
 library(stm)
 library(tidyr)
+library(viridis)
 
 ### This script provides an outline into a structured topic modelling 
 ### It can be modified to run more or less documents.
@@ -343,12 +344,14 @@ textrelevance <- questiontext %>%
   filter(str_detect(text_q_l, "fn-sambandet") |
            str_detect(text_q_l, "ubu") |
            str_detect(text_q_l, "utdanning for bærekraftig utvikling") |
+           str_detect(text_q_l, "utdanning for berekraftig utvikling") |
            str_detect(text_q_l, "unicef") | 
            str_detect(text_q_l, "wfp") | 
            str_detect(text_q_l, "unaids") |
            str_detect(text_a_l, "fn-sambandet") |
            str_detect(text_a_l, "ubu") |
            str_detect(text_a_l, "utdanning for bærekraftig utvikling") |
+           str_detect(text_a_l, "utdanning for berekraftig utvikling") |
            str_detect(text_a_l, "unicef") | 
            str_detect(text_a_l, "wfp") | 
            str_detect(text_a_l, "unaids"))
@@ -383,9 +386,55 @@ textrelevance <- textrelevance %>%
     str_detect(text_a_l, "unaids") ~ "3"
   ))
 
-
 ggplot(textrelevance, aes(x = session_id, fill = priority_word_level)) + 
   geom_bar() + 
   theme_bw()
 
-get_topics()
+textrelevance <- left_join(textrelevance, textrelevancemeta, by = c("id"))
+
+#### importing mp's and joining with the questions
+
+periods_storting <- get_parlperiods()
+
+periods_storting <- periods_storting %>%
+  filter(id %in% c("2021-2025", "2017-2021", "2013-2017", "2009-2013"))
+
+j <- list()
+
+for (x in periods_storting$id) {
+  j[[x]] <- get_parlperiod_mps(periodid = x, substitute = TRUE, 
+                               good_manners = 0)
+}
+
+
+allmps <- do.call("rbind", j)
+
+allmpsparties <- allmps %>% 
+  select(question_from_id = mp_id, gender, party_id, county_id, period_id)
+
+textrelevance <- textrelevance %>%
+  mutate(period_id = case_when(session_id == "2021-2022" ~ "2021-2025",
+                               session_id == "2020-2021" ~ "2017-2021",
+                               session_id == "2019-2020" ~ "2017-2021",
+                               session_id == "2018-2019" ~ "2017-2021",
+                               session_id == "2017-2018" ~ "2017-2021",
+                               session_id == "2016-2017" ~ "2013-2017",
+                               session_id == "2015-2016" ~ "2013-2017",
+                               session_id == "2014-2015" ~ "2013-2017",
+                               session_id == "2013-2014" ~ "2013-2017",
+                               session_id == "2012-2013" ~ "2009-2013",
+                               session_id == "2011-2012" ~ "2009-2013"))
+
+textrelevancewparty <- left_join(textrelevance, allmpsparties, 
+                                 by = c("question_from_id", "period_id"))
+
+safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", "#117733", "#332288", "#AA4499", 
+                             "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")
+
+ggplot(textrelevancewparty, aes(x = session_id, fill = party_id)) + 
+  geom_bar() + 
+  scale_fill_viridis(discrete = TRUE)
+
+ggplot(textrelevancewparty, aes(x = session_id, fill = gender)) + 
+  geom_bar() + 
+  scale_fill_viridis(discrete = TRUE)
