@@ -84,7 +84,7 @@ sessions_storting <- sessions_storting %>%
                    "2014-2015", "2015-2016", "2016-2017",
                    "2017-2018", "2018-2019", "2019-2020", 
                    "2020-2021", "2021-2022"))
-
+?cat
 ## The id's are then entered into this loop, which *should* retrieve 
 ## ALL question id's for our relevant period. 
 
@@ -132,8 +132,14 @@ questiontext <- do.call("rbind", d)
 
 ## Next step is to find the relevant keywords, filter questions and ascertain
 ## the dates and attached documents that they exist in. 
+library(stringr)
 
-sum(str_detect(questiontext$question_text, "FN-sambandet"))
+sum(str_detect(questiontext$question_text,"fn-sambandet"))
+
+sum(str_detect(questiontext$question_text, "Utdanning for Bærekraftig Utvikling"))
+
+sum(str_detect(questiontext$answer_text, "FN-sambandet"))
+
 
 questiontext$question_text[str_which(questiontext$question_text, "4.7")]
 
@@ -147,3 +153,6 @@ questionsFN$answer_text
 save(questionlist, file = "Question_Data/MetadataQuestionList.Rdata")
 save(questiontext, file = "Question_Data/All_Questions.Rdata")
 
+print("æøå")
+
+Sys.setlocale(category = "LC_ALL", "")
