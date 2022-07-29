@@ -1,0 +1,38 @@
+---
+title: "ISSSV-1337, Group 3 Report UN Association of Norway"
+author: "Gard Olav Dietrichson, Hannes Brauer, Markus Opheim, Andreas Kroknes, Ingrid Johannesen, Nora Didriksen, Tia Tiller"
+date: '2022-07-25'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Given Objective
+
+The task provided to us, was to provide the UNA with "quantitative measures" of their work. The wish from our mission provider was to gain knowledge about how much the members of parliament are aware of the activities of the UN
+
+
+## Problem 
+
+The central problem at hand is how to measure the impact of lobbying, as direct contact between politicians is difficult to find and to measure. 
+
+
+## Our Approach
+
+In order to map the knowledge of the activities of the UNA, we decided to collect all available texts from Stortinget. After gathering these texts, we needed to figure out how to measure relative prevalence in our data. To this we first decided to create a list over relevant key terms that represent the work of the UNA. We divided these into three levels, based on the suggestions provided to us by our mission provider. The top level search word is "FN-sambandet" the UNA in Norwegian. The first thing that struck us was the fact that this yielded very few results, and as such we saw it necessary to focus much of our work outside what UNA has been explicitly mentioned in. 
+
+Our mission description also contained more suggestions for keywords, and so we used those to create level 2 and level 3 searchwords. Level 2 consists of a particular goal that our provider explained that they had been working towards. This goal was UN sustainability goal 4.7 Education for Sustainable Development. The keywords here were also used to investigate, but again returned very few results. The problems of this will be elaborated on in a later section. 
+
+The final level of search words was the relevant humanitarian sub organisations of UN, such as UNAIDS, WFP, UNDP and UNICEF. These ended up forming the backbone of our approach, as they were far more prevalent, however, all words were maintained in the end, when a complete analysis was performed. 
+
+Finally it is worth mentioning that we also foresaw the large amount of documents being being problematic, as such, we early on decided to limit our timeframe. The package stortingsscrape informs us that voting data is only available from the 2011-2012 session and onwards, so we viewed that as a natural starting point. 
+
+## Sectioning 
+
+Due to the large corpus that would arise from joining all documents, and the severe lack of coherent genre textuality, and to the unique opportunities afforded by each form of retrievable information, we decided to split up our work, and pursue separate roads of inquiry based on each section. 
+
+# Questions 
+
+The questions were scraped, below is the plot drawing the overview of the spreading of mentions of our relevant keywords over the relevant timeframe.
