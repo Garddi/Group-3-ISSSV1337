@@ -100,7 +100,34 @@ hearingtext <- hearinginput %>%
   select(hearing_id, hearing_input_organization, committee_id, hearing_input_date, hearing_input_text, hearing_input_title) %>% 
   mutate(fulltext = paste(hearing_input_title, hearing_input_text))
 
-#now we can use the fulltext variable to check for FN sambandet
+#now we can use the fulltext variable to check for FN sambandet and other keywords
 mentionsFNS <- hearingtext %>% 
   filter(str_detect(fulltext, "FN-sambandet"))
-#we observe three mentions in hearings, let's visualise that next:
+#we observe three mentions in hearings
+
+
+library(stringr)
+
+sum(str_detect(hearingtext$fulltext,"fn-sambandet"))
+#O results
+
+sum(str_detect(hearingtext$fulltext, "Utdanning for Bærekraftig Utvikling"))
+#0 results
+
+sum(str_detect(hearingtext$fulltext, "FN-sambandet"))
+#3 results
+
+#this next code prints all the text input that contains "4.7"
+hearingtext$fulltext[str_which(hearingtext$fulltext, "4.7")]
+
+#this string detects whether or not an input contains "Samfunnsøokonomisk"
+str_detect(hearingtext$fulltext,"Samfunnsøkonomisk")
+sum(str_detect(hearingtext$fulltext, "Samfunnsøkonomisk"))
+#26 mentions
+
+#trying to plot all these mentions, we create a subset that unites all the keyword searches
+keywordmentions <- hearingtext$fulltext %>% 
+  filter(str_detect(fulltext, "FN-sambandet")|
+           str_detect(fulltext, "Samfunnsøkonomisk")|
+           str_detect(fulltext, "4.7")|
+           str_detect(fulltext, "utviklingsmål"))
