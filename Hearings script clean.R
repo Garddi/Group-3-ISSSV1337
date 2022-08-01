@@ -105,29 +105,39 @@ mentionsFNS <- hearingtext %>%
   filter(str_detect(fulltext, "FN-sambandet"))
 #we observe three mentions in hearings
 
-
+#but first we homogenize the text to make our search easier
 library(stringr)
 
-sum(str_detect(hearingtext$fulltext,"fn-sambandet"))
-#O results
+#changing all text to lower case and removing html patterns
+hearingtext <- hearingtext %>% 
+  mutate(fulltext_lo = str_remove_all(str_to_lower(fulltext), pattern = "<p>"))
 
-sum(str_detect(hearingtext$fulltext, "Utdanning for Bærekraftig Utvikling"))
+#removing all text that is written in <> parentheses (leftover html code)
+hearingtext <- hearingtext %>% 
+  mutate(fulltext_lo = str_remove_all(fulltext_lo, pattern = "<.*>"), 
+         fulltext_lo = str_replace_all(fulltext_lo, pattern =  "\\s*\\([^\\)]+\\\\", ""))
+
+#now checking for keywords
+sum(str_detect(hearingtext$fulltext_lo,"fn-sambandet"))
+#1 results
+
+sum(str_detect(hearingtext$fulltext_lo, "utdanning for bærekraftig utvikling"))
 #0 results
 
-sum(str_detect(hearingtext$fulltext, "FN-sambandet"))
-#3 results
-
 #this next code prints all the text input that contains "4.7"
-hearingtext$fulltext[str_which(hearingtext$fulltext, "4.7")]
+hearingtext$fulltext[str_which(hearingtext$fulltext_lo, "4.7")]
 
-#this string detects whether or not an input contains "Samfunnsøokonomisk"
-str_detect(hearingtext$fulltext,"Samfunnsøkonomisk")
-sum(str_detect(hearingtext$fulltext, "Samfunnsøkonomisk"))
-#26 mentions
+#this string detects whether or not an input contains "samfunnsøokonomisk"
+str_detect(hearingtext$fulltext_lo,"samfunnsøkonomisk")
+sum(str_detect(hearingtext$fulltext_lo, "samfunnsøkonomisk"))
+#53 mentions
 
 #trying to plot all these mentions, we create a subset that unites all the keyword searches
-keywordmentions <- hearingtext$fulltext %>% 
-  filter(str_detect(fulltext, "FN-sambandet")|
-           str_detect(fulltext, "Samfunnsøkonomisk")|
-           str_detect(fulltext, "4.7")|
-           str_detect(fulltext, "utviklingsmål"))
+keywordmentions <- hearingtext$fulltext_lo %>% 
+  filter(str_detect(fulltext_lo, "FN-sambandet")|
+           str_detect(fulltext_lo, "Samfunnsøkonomisk")|
+           str_detect(fulltext_lo, "4.7")|
+           str_detect(fulltext_lo, "utviklingsmål"))
+
+#weirdcheck
+?filter
