@@ -67,6 +67,12 @@ for(x in unique(allsessionshearings$hearing_id)){
   try(b[[x]] <- get_hearing_input(hearingid = x, good_manners = 0), silent = TRUE)
 }
 
+#we are observing that data from before the 2020-2021 sessions is missing
+#we continue with the input data we can extract
+
+#this is just a test for the last hearing that returns data
+get_hearing_input(hearingid = "10004183")
+
 #place the retrieved data from list b into another object we can work with
 hearinginput <- do.call(rbind, b)
 
@@ -134,15 +140,39 @@ sum(str_detect(hearingtext$fulltext_lo, "samfunnsøkonomisk"))
 #53 mentions
 
 #Now we prepare plotting and create new variables that unite all the keyword searches after priority
-keywordmentions <- hearingtext$%>% 
+keywordmentions <- hearingtext %>% 
   mutate(priority_level = case_when(
     str_detect(fulltext_lo, "fn-sambandet") ~ "1",
     str_detect(fulltext_lo, "ubu") ~ "2",
     str_detect(fulltext_lo, "unicef") ~ "3",
   ))
   
+#now we create a subset that only contains the rows with relevant mentions
+keyword_subset <- keywordmentions %>% 
+  filter(str_detect(fulltext_lo, "fn-sambandet")|
+           str_detect(fulltext_lo, "ubu")|
+           str_detect(fulltext_lo, "unicef"))
+  
+#now we 
+?left_join
+keyword_subset <- left_join(keyword_subset, subfullset, by = c("hearing_id"))
+
+subfullset <- allsessionshearings %>% 
+  select(hearing_id, session_id)
+
+#
+newkeywordmentions <- left_join(keywordmentions, subfullset, by = c("hearing_id"))
+keywordmentions <- left_join(allsessionshearings, sess , by = c("session_id"))
+
+ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) + 
+  geom_bar()
+
+table(allsessionshearings$session_id)
+
+
 #now we are trying to plot these variables
-ggplot(textrelevance, aes(x = session_id, fill = priority_word_level)) + 
+ggplot(keywordmentions, aes(x = committee_id, fill = priority_level)) + 
   geom_bar() + 
   theme_bw()
-  
+ 
+
