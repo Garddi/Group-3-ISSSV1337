@@ -119,7 +119,8 @@ hearingtext <- hearingtext %>%
 
 #now checking for keywords
 sum(str_detect(hearingtext$fulltext_lo,"fn-sambandet"))
-#1 results
+#1 results 
+#we observe less mentions here, as only hearing text and title are searched (FN Sambandet as the hearing organisation is omitted)
 
 sum(str_detect(hearingtext$fulltext_lo, "utdanning for bærekraftig utvikling"))
 #0 results
@@ -132,12 +133,16 @@ str_detect(hearingtext$fulltext_lo,"samfunnsøkonomisk")
 sum(str_detect(hearingtext$fulltext_lo, "samfunnsøkonomisk"))
 #53 mentions
 
-#trying to plot all these mentions, we create a subset that unites all the keyword searches
-keywordmentions <- hearingtext$fulltext_lo %>% 
-  filter(str_detect(fulltext_lo, "FN-sambandet")|
-           str_detect(fulltext_lo, "Samfunnsøkonomisk")|
-           str_detect(fulltext_lo, "4.7")|
-           str_detect(fulltext_lo, "utviklingsmål"))
-
-#weirdcheck
-?filter
+#Now we prepare plotting and create new variables that unite all the keyword searches after priority
+keywordmentions <- hearingtext$%>% 
+  mutate(priority_level = case_when(
+    str_detect(fulltext_lo, "fn-sambandet") ~ "1",
+    str_detect(fulltext_lo, "ubu") ~ "2",
+    str_detect(fulltext_lo, "unicef") ~ "3",
+  ))
+  
+#now we are trying to plot these variables
+ggplot(textrelevance, aes(x = session_id, fill = priority_word_level)) + 
+  geom_bar() + 
+  theme_bw()
+  
