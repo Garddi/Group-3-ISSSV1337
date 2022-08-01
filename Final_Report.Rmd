@@ -36,3 +36,150 @@ Due to the large corpus that would arise from joining all documents, and the sev
 # Questions 
 
 The questions were scraped, below is the plot drawing the overview of the spreading of mentions of our relevant keywords over the relevant timeframe.
+
+## The questions we ask of the questions
+
+ - Who are asking questions about the UN and the UNA?
+ - What are these questions about?
+ - What questions mentions the UNA and the associated UN organizations?
+ - How are these talked about?
+ - Do these questions touch on issues regarding sustainability and other topics of interest that the UNA might be interested in?
+ - Other interesting patterns in the questions
+ 
+In order to answer this, we scrape all the questions from the storting's homepage. The following code scrapes all the questions for our relevant time frame. 
+
+```{r, eval=FALSE}
+library(tidyverse)
+library(stortingscrape)
+
+## For now the sessions we are interested in are limited to 2011-2022
+
+sessions_storting <- get_parlsessions()
+
+sessions_storting <- sessions_storting %>%
+  filter(id %in% c("2011-2012", "2012-2013", "2013-2014",
+                   "2014-2015", "2015-2016", "2016-2017",
+                   "2017-2018", "2018-2019", "2019-2020", 
+                   "2020-2021", "2021-2022"))
+```
+
+This section retrieves all the sessions that we are interested in, the object `sessions_storting` will be used for most of our code chunks later.
+
+The next step is then to retrieve the metadata on all the questions.
+
+```{r, eval=FALSE}
+## The id's are then entered into this loop, which *should* retrieve 
+## ALL question id's for our relevant period. 
+
+a<-list()
+b<-list()
+c<-list()
+
+for(x in unique(sessions_storting$id)){
+  a[[x]] <- get_session_questions(sessionid = x, q_type = "interpellasjoner", status = NA, good_manners = 0)
+  b[[x]] <- get_session_questions(sessionid = x, q_type = "sporretimesporsmal", status = NA, good_manners = 0)
+  c[[x]] <- get_session_questions(sessionid = x, q_type = "skriftligesporsmal", status = NA, good_manners = 0)
+  
+  #paste0("stortingsporsmal", x) = rbind(a, b, c)
+}
+
+## Unlisting all of the resulting lists, they are lists of identically 
+## sized dataframes.
+
+questionlista <- do.call("rbind", a)
+questionlistb <- do.call("rbind", b)
+questionlistc <- do.call("rbind", c)
+
+clist <- list(questionlista, questionlistb, questionlistc)
+
+## Combining all for a dataframe we can fetch 
+
+questionlist <- do.call("rbind", clist)
+
+```
+
+This has created our full list of questions, but not the text of the question and answer themselves. The next step is retrieving all of those. 
+
+```{r, eval = FALSE}
+
+d <- list()
+
+for(x in unique(questionlist$id)){
+  it <- 100*(which(unique(questionlist$id) == x) / length(unique(questionlist$id)))
+  cat(paste0(sprintf("Progress: %.4f%%             ", it), "\r"))
+  
+  d[[x]] <- get_question(questionid = x, good_manners = 0)
+  #paste0("stortingsporsmal", x) = rbind(a, b, c)
+}
+
+
+questiontext <- do.call("rbind", d)
+
+save(questionlist, file = "Question_Data/MetadataQuestionList.Rdata")
+save(questiontext, file = "Question_Data/All_Questions.Rdata")
+
+```
+
+This now gives us a dataframe for analysis. After this we approach the data from two ways, we create a structural topic model, and we use this to analyse the totality of the questions dataframe. 
+
+The structural topic model is created with the code below. First we have to include the answers as well, as part of the documents. 
+
+```{r, eval=FALSE}
+answerlist <- questiontext %>%
+  select(id, text = answer_text, title, type, question_from_id, 
+         qustion_to_id)
+
+## Dropping the observations with no text, note that no text in 
+## Stortingscrape is coded as empty string, not as an NA
+
+answerlist <- answerlist %>%
+  mutate(notapplicable = ifelse(text == "", NA, 1)) %>%
+  drop_na(notapplicable) %>%
+  select(-notapplicable)
+
+## Limiting the dataset
+
+questionshort <- questiontext %>%
+  select(id, text = question_text, title, type, question_from_id,
+         qustion_to_id)
+
+## Binding the sets together, so I have one dataframe with complete
+## texts from either answers or questions. **OF NOTE** I should probably
+## have added a string to the id's so that i separate answer texts 
+## from question texts, given their identical id.
+
+assembledtextquestions <- rbind(questionshort, answerlist)
+
+## removing reduntant objects
+
+rm(answerlist, questionlist, questionshort, questiontext)
+
+## First i turn all strings into lower case
+
+assembledtextquestions <- assembledtextquestions %>% 
+  mutate(text_l = str_to_lower(text))
+
+## Before tokenizing I create a stopword dataset, I add br, because it
+## is not properly removed from some observations. 
+
+stop_words <- get_stopwords(language = "no")
+
+removeword <- data.frame(word = "br", lexicon = "own library")
+
+stop_words <- rbind(stop_words, removeword)
+
+## Next I tokennize the text, this takes a moment. 
+
+questiontokens <- assembledtextquestions %>%
+  unnest_tokens(input = text, # Which variable to get the text from
+                output = word, # What the new variable should be called
+                token = "words") # Type of tokens to split the text into
+
+## Removing all stopwords from my stop words book
+
+questiontokens <- questiontokens %>%
+  anti_join(stop_words, by = "word") # Joining against the stopwords dataframe to get rid of cells with stopwords
+
+
+
+```

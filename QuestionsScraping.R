@@ -84,7 +84,7 @@ sessions_storting <- sessions_storting %>%
                    "2014-2015", "2015-2016", "2016-2017",
                    "2017-2018", "2018-2019", "2019-2020", 
                    "2020-2021", "2021-2022"))
-?cat
+
 ## The id's are then entered into this loop, which *should* retrieve 
 ## ALL question id's for our relevant period. 
 

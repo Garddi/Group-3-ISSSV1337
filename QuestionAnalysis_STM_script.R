@@ -3,6 +3,7 @@
 load("Question_Data/MetadataQuestionList.Rdata")
 load("Question_Data/All_Questions.Rdata")
 
+Sys.getlocale()
 Sys.setlocale(category = "LC_ALL", "")
 print("æøå")
 
@@ -24,6 +25,8 @@ library(viridis)
 
 ## since the answers are in the same rows as the questions, I first
 ## isolate the answer texts.
+
+load("Question_Data/All_Questions.Rdata")
 
 answerlist <- questiontext %>%
   select(id, text = answer_text, title, type, question_from_id, 
@@ -315,6 +318,15 @@ questiontokens_lda_75
 question_doc_prob_75 <- tidy(questiontokens_lda_75, matrix = "gamma", # Calculating document probabilities
                     document_names = rownames(questiontokens_dfm)) # Adding the names of the songs to the dataframe
 
+### Isolating the top documents that charge on topic 47 
+
+topic47docs <- question_doc_prob_75 %>% 
+  filter(topic == 47) %>% 
+  slice_max(order_by = gamma, n = 650) 
+
+summary(topic47docs$gamma)
+
+### Here i create topic assignment for each document
 
 top_docs <- question_doc_prob_75 %>%
   group_by(document) %>% # Find the next statistic per document
@@ -338,23 +350,33 @@ load("Question_Data/All_Questions.Rdata")
 
 questiontext <- questiontext %>%
   mutate(text_q_l = str_to_lower(question_text),
-         text_a_l = str_to_lower(answer_text))
+         text_a_l = str_to_lower(answer_text),
+         justification_l = str_to_lower(justification))
 
 textrelevance <- questiontext %>%
   filter(str_detect(text_q_l, "fn-sambandet") |
-           str_detect(text_q_l, "ubu") |
            str_detect(text_q_l, "utdanning for bærekraftig utvikling") |
            str_detect(text_q_l, "utdanning for berekraftig utvikling") |
            str_detect(text_q_l, "unicef") | 
            str_detect(text_q_l, "wfp") | 
            str_detect(text_q_l, "unaids") |
            str_detect(text_a_l, "fn-sambandet") |
-           str_detect(text_a_l, "ubu") |
            str_detect(text_a_l, "utdanning for bærekraftig utvikling") |
            str_detect(text_a_l, "utdanning for berekraftig utvikling") |
            str_detect(text_a_l, "unicef") | 
            str_detect(text_a_l, "wfp") | 
-           str_detect(text_a_l, "unaids"))
+           str_detect(text_a_l, "unaids") |
+           str_detect(justification_l, "fn-sambandet") |
+           str_detect(justification_l, "utdanning for bærekraftig utvikling") |
+           str_detect(justification_l, "utdanning for berekraftig utvikling") |
+           str_detect(justification_l, "unicef") | 
+           str_detect(justification_l, "wfp") | 
+           str_detect(justification_l, "unaids"))
+
+textrelevancesamband <- textrelevance %>% 
+  filter(str_detect(text_a_l, "fn-sambandet") |
+           str_detect(text_q_l, "fn-sambandet") |
+           str_detect(justification_l, "fn-sambandet"))
 
 textrelevance <- left_join(textrelevance, topic_assignment, by = "id")
 
@@ -367,15 +389,103 @@ table(textrelevance$ThirdTopic)
 textrelevancemeta <- questionlist %>%
   filter(id %in% textrelevance$id)
 
+### Plotting the relevant categories for our found variables. 
+
+topcatdf <- data.frame(topics = c(47, 54, 2, 26, 39), number = c(38, 8, 6, 4, 2))
+
+ggplot(topcatdf, aes(x = as.character(topics), y = number)) + 
+  geom_bar(fill = "blue", stat = "identity") + 
+  theme_bw()
+
+questiontopics_group_topcat <- questiontopics_group_75 %>%
+  filter(topic %in% topcatdf$topics)
+
+questiontopics_group_topcat %>%
+  ggplot(aes(term, beta, fill = topic)) +
+  geom_bar(stat = "identity") + 
+  facet_wrap( ~ topic, 
+              ncol = 3,
+              scales = "free") + 
+  labs(x = "", y = "Word-Topic probability") + 
+  theme_bw() + 
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+
+### second highest cat
+
+seccatdf <- data.frame(topics = c(39, 47, 26, 54, 6, 2, 38, 51, 5, 73), 
+                       number = c(11, 9, 6, 6, 5, 4, 3, 3, 2, 2))
+
+ggplot(seccatdf, aes(x = as.character(topics), y = number)) + 
+  geom_bar(fill = "blue", stat = "identity") + 
+  theme_bw()
+
+questiontopics_group_seccat <- questiontopics_group_75 %>%
+  filter(topic %in% seccatdf$topics)
+
+questiontopics_group_seccat %>%
+  ggplot(aes(term, beta, fill = topic)) +
+  geom_bar(stat = "identity") + 
+  facet_wrap( ~ topic, 
+              ncol = 3,
+              scales = "free") + 
+  labs(x = "", y = "Word-Topic probability") + 
+  theme_bw() + 
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+
+### Third category
+
+thirdcatdf <- data.frame(topics = c(38, 30, 55, 54, 51, 26, 39, 20, 41, 47, 65),
+                         number = c(10, 8, 6, 5, 5, 5, 4, 4, 3, 3, 2))
+
+ggplot(thirdcatdf, aes(x = as.character(topics), y = number)) + 
+  geom_bar(fill = "blue", stat = "identity") + 
+  theme_bw()
+
+questiontopics_group_thirdcat <- questiontopics_group_75 %>%
+  filter(topic %in% thirdcatdf$topics)
+
+questiontopics_group_thirdcat %>%
+  ggplot(aes(term, beta, fill = topic)) +
+  geom_bar(stat = "identity") + 
+  facet_wrap( ~ topic, 
+              ncol = 3,
+              scales = "free") + 
+  labs(x = "", y = "Word-Topic probability") + 
+  theme_bw() + 
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+
+#### But what can we dow with some precise topics?
+
+### Topics 30, 33, 43, 52, 54, 63.
+
+#Topic 30 is related to questions asked that require the minister in charge to do
+# something. 
+
+top_docs100topic30 <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  filter(topic == 30 & document %in% top100question$id)
+
+plot(density(top_docs100topic30$gamma))
+
+#Topic 33 is about emissions. 
+
+top_docs100topic33 <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  filter(topic == 33 & document %in% top100question$id)
+
+plot(density(top_docs100topic33$gamma))
+
+
 
 ###### -------- plotting some results -------
 
 textrelevance <- textrelevance %>%
   mutate(priority_word_level = case_when(
     str_detect(text_q_l, "fn-sambandet") ~ "1",
-    str_detect(text_a_l, "fn-sambandet") ~ "1", 
-    str_detect(text_q_l, "ubu") ~ "2", 
-    str_detect(text_a_l, "ubu") ~ "2",
+    str_detect(text_a_l, "fn-sambandet") ~ "1",
     str_detect(text_q_l, "utdanning for bærekraftig utvikling") ~ "2",
     str_detect(text_a_l, "utdanning for bærekraftig utvikling") ~ "2",
     str_detect(text_q_l, "unicef") ~ "3",
@@ -383,7 +493,12 @@ textrelevance <- textrelevance %>%
     str_detect(text_q_l, "wfp") ~ "3",
     str_detect(text_a_l, "wfp") ~ "3",
     str_detect(text_q_l, "unaids") ~ "3", 
-    str_detect(text_a_l, "unaids") ~ "3"
+    str_detect(text_a_l, "unaids") ~ "3",
+    str_detect(justification_l, "fn-sambandet") ~ "1",
+    str_detect(justification_l, "utdanning for bærekraft utvikling") ~ "2",
+    str_detect(justification_l, "unicef") ~ "2",
+    str_detect(justification_l, "wfp") ~ "2", 
+    str_detect(justification_l, "unaids") ~ "2"
   ))
 
 ggplot(textrelevance, aes(x = session_id, fill = priority_word_level)) + 
@@ -677,3 +792,75 @@ ggplot(questiontextwparty, aes(x = session_id, fill = govposition)) +
 ggplot(questiontextwparty, aes(x = session_id, fill = gender)) + 
   geom_bar() + 
   scale_fill_viridis(discrete = TRUE)
+
+
+ggplot(questiontextwparty, aes(x = session_id, fill = party_id)) + 
+  geom_bar() + 
+  scale_fill_discrete(type = safe_colorblind_palette) + 
+  theme_bw()
+
+
+## In terms of questions, the Labour party seems strangely underrepresented
+## Especially when compared to the activity of the Conservatives. 
+
+## There is the possibility that this a sort of "opposition effect"
+## Responding to questions regarding Current topics. However
+## the Labour party did not seem to return the favour during the 
+## first crimea crisis. 
+
+## The progress party is (unsurprisingly) severely underrepresented. 
+## Somewhat interesting given their insistance on "helping where they are"
+
+## Socialist Left is also mildly underrepresented, but within statistical
+## insignificance (probably). 
+
+### What is the reccommended course of action?
+
+
+ukr_texts <- textrelevancewparty %>%
+  filter(str_detect(text_q_l, "ukraina") |
+           str_detect(text_a_l, "ukraina"))
+
+
+###Ukraine seems to account for the entire increase. 
+
+
+UBUfiltered <- questiontextwparty %>%
+  filter(str_detect(text_q_l, "bærekraftig") & str_detect(text_q_l, "utdanning"))
+
+UBUfiltered2 <- questiontextwparty %>%
+  filter(str_detect(text_a_l, "bærekraftig") & str_detect(text_a_l, "utdanning"))
+
+questiontextwparty <- questiontextwparty %>%
+  mutate(justification_l = str_to_lower(justification))
+
+UBUfiltered3 <- questiontextwparty %>%
+  filter(str_detect(justification_l, "bærekraftig") & str_detect(justification_l, "utdanning"))
+
+sum(str_detect(questiontextwparty$justification_l, "\\b(ilo)\\b"))
+
+
+
+
+### Lets check the top chargers on the topic
+
+top100question <- questiontextwparty %>% 
+  filter(id %in% topic47docs$document)
+
+
+ggplot(top100question, aes(x = session_id, fill = party_id)) + 
+  geom_bar() +
+  scale_fill_discrete(type = safe_colorblind_palette) +
+  theme_bw()
+
+ggplot(top100question, aes(x = session_id, fill = govposition)) + 
+  geom_bar() +
+  scale_fill_discrete(type = safe_colorblind_palette) +
+  theme_bw()
+
+ggplot(top100question, aes(x = session_id, fill = gender)) + 
+  geom_bar() + 
+  scale_fill_discrete(type = safe_colorblind_palette) + 
+  theme_bw()
+
+
