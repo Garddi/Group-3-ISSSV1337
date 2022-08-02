@@ -416,7 +416,14 @@ textrelevancesamband <- textrelevance %>%
 
 textrelevance <- left_join(textrelevance, topic_assignment, by = "id")
 
-table(textrelevance$TopTopic)
+ggplot(textrelevance, aes(x = TopTopic)) + 
+  geom_histogram(binwidth = 1)
+
+ggplot(textrelevance, aes(x = SecTopic)) + 
+  geom_histogram(binwidth = 1)
+
+ggplot(textrelevance, aes(x = ThirdTopic)) + 
+  geom_histogram(binwidth = 1)
 
 table(textrelevance$SecTopic)
 
@@ -729,6 +736,8 @@ ggplot(textrelevancewparty, aes(x = session_id, fill = govposition)) +
   geom_bar() + 
   scale_fill_viridis(discrete = TRUE) + 
   theme_bw()
+
+
 
 questiontext2 <- questiontext %>%
   mutate(period_id = case_when(session_id == "2021-2022" ~ "2021-2025",
