@@ -371,7 +371,43 @@ textrelevance <- questiontext %>%
            str_detect(justification_l, "utdanning for berekraftig utvikling") |
            str_detect(justification_l, "unicef") | 
            str_detect(justification_l, "wfp") | 
-           str_detect(justification_l, "unaids"))
+           str_detect(justification_l, "unaids") |
+           str_detect(text_q_l, "unesco") |
+           str_detect(text_a_l, "unesco") |
+           str_detect(justification_l, "unesco") |
+           str_detect(text_q_l, "undp") |
+           str_detect(text_a_l, "undp") |
+           str_detect(justification_l, "undp") |
+           str_detect(text_q_l, "\\b(ilo)\\b") |
+           str_detect(text_a_l, "\\b(ilo)\\b") |
+           str_detect(justification_l, "\\b(ilo)\\b") |
+           str_detect(text_q_l, "fns matvareprogram") |
+           str_detect(text_a_l, "fns matvareprogram") |
+           str_detect(justification_l, "fns matvareprogram") |
+           str_detect(text_q_l, "who") |
+           str_detect(text_a_l, "who") |
+           str_detect(justification_l, "who") |
+           str_detect(text_q_l, "verdens helseorganisasjon") |
+           str_detect(text_a_l, "verdens helseorganisasjon") |
+           str_detect(justification_l, "verdens helseorganisasjon") |
+           str_detect(text_q_l, "ipcc") |
+           str_detect(text_a_l, "ipcc") |
+           str_detect(justification_l, "ipcc") |
+           str_detect(text_q_l, "fns klimapanel") |
+           str_detect(text_a_l, "fns klimapanel") |
+           str_detect(justification_l, "fns klimapanel") |
+           str_detect(text_q_l, "bærekraftsmål") |
+           str_detect(text_a_l, "bærekraftsmål") |
+           str_detect(justification_l, "bærekraftsmål") |
+           str_detect(text_q_l, "berekraftsmål") |
+           str_detect(text_a_l, "berekraftsmål") |
+           str_detect(justification_l, "berekraftsmål") |
+           str_detect(text_q_l, "2030-agendaen") |
+           str_detect(text_a_l, "2030-agendaen") |
+           str_detect(justification_l, "2030-agendaen") |
+           str_detect(text_q_l, "agenda 2030") |
+           str_detect(text_a_l, "agenda 2030") |
+           str_detect(justification_l, "agenda 2030"))
 
 textrelevancesamband <- textrelevance %>% 
   filter(str_detect(text_a_l, "fn-sambandet") |
@@ -478,7 +514,37 @@ top_docs100topic33 <- question_doc_prob_75 %>%
 
 plot(density(top_docs100topic33$gamma))
 
+#Topic 43 is about sustainability. 
 
+top_docs100topic43 <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  filter(topic == 43 & document %in% top100question$id)
+
+plot(density(top_docs100topic43$gamma))
+
+#Topic 52, Higher education
+
+top_docs100topic52 <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  filter(topic == 52 & document %in% top100question$id)
+
+plot(density(top_docs100topic52$gamma))
+
+#Topic 54, more climate emissions
+
+top_docs100topic54 <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  filter(topic == 54 & document %in% top100question$id)
+
+plot(density(top_docs100topic54$gamma))
+
+#Topic 63, Environmentalism
+
+top_docs100topic63 <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  filter(topic == 63 & document %in% top100question$id)
+
+plot(density(top_docs100topic63$gamma))
 
 ###### -------- plotting some results -------
 
@@ -837,10 +903,17 @@ questiontextwparty <- questiontextwparty %>%
 UBUfiltered3 <- questiontextwparty %>%
   filter(str_detect(justification_l, "bærekraftig") & str_detect(justification_l, "utdanning"))
 
+
 sum(str_detect(questiontextwparty$justification_l, "\\b(ilo)\\b"))
 
 
+sum(str_detect(questiontextwparty$text_a_l, "\\b(sdg)\\b"))
 
+sum(str_detect(questiontextwparty$text_a_l, "2030-agendaen"))
+
+
+ilocheck <- questiontextwparty %>% 
+  filter(str_detect(questiontextwparty$text_a_l, "bærekraftsmål"))
 
 ### Lets check the top chargers on the topic
 
