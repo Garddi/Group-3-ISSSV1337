@@ -144,8 +144,27 @@ sum(str_detect(hearingtext$fulltext_lo, "samfunnsøkonomisk"))
 keywordmentions <- hearingtext %>% 
   mutate(priority_level = case_when(
     str_detect(fulltext_lo, "fn-sambandet") ~ "1",
+    str_detect(fulltext_lo, "una") ~ "1",
+    str_detect(fulltext_lo, "united nations association") ~ "1",
+    str_detect(fulltext_lo, "fn sambandet") ~ "1"
     str_detect(fulltext_lo, "ubu") ~ "2",
+    str_detect(fulltext_lo, "utdanning for bærekraftig utvikling") ~ "2",
+    str_detect(fulltext_lo, "utdanning i bærekraftig utvikling") ~ "2",
+    str_detect(fulltext_lo, "utdanning om bærekraftig utvikling") ~ "2",
+    str_detect(fulltext_lo, "education for sustainable development") ~ "2",
+    str_detect(fulltext_lo, "education for sustainability") ~ "2",
+    str_detect(fulltext_lo, "esd") ~ "2",
+    str_detect(fulltext_lo, "delmål 4.7") ~ "2",
+    str_detect(fulltext_lo, "bærekraftsmål 4") ~ "2",
+    str_detect(fulltext_lo, "sdg 4") ~ "2",
     str_detect(fulltext_lo, "unicef") ~ "3",
+    str_detect(fulltext_lo, "ilo") ~ "3",
+    str_detect(fulltext_lo, "unesco") ~ "3",
+    str_detect(fulltext_lo, "who") ~ "3",
+    str_detect(fulltext_lo, "wfp") ~ "3",
+    str_detect(fulltext_lo, "undp") ~ "3",
+    str_detect(fulltext_lo, "unep") ~ "3",
+    str_detect(fulltext_lo, "fao") ~ "3",
   ))
   
 #now we create a subset that only contains the rows with relevant mentions
@@ -176,8 +195,23 @@ table(allsessionshearings$session_id)
 ggplot(keywordmentions, aes(x = committee_id, fill = priority_level)) + 
   geom_bar() + 
   theme_bw()
+#keywordmentions includes NAs and is therefore not fit for presentation
+
+?ggplot2
 
 ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) + 
-  geom_bar()
+  geom_bar() +
+  labs(title = "Keyword Mentions in Hearings",
+       x = "Storting Sessions",
+       y = "Number of Mentions",
+       caption = "Mentions after priority level: 
+       1 - direct mentions of UNA and related terms 
+       2 - mentions of terms related to SDG 4.7 on education
+       3 - mentions of associated UN Organisations") +
+  theme(legend.position = "right",
+        plot.caption.position = "plot") +
+  theme_light() +
+  coord_cartesian(ylim = c(0,15))
+
  
 
