@@ -144,9 +144,9 @@ sum(str_detect(hearingtext$fulltext_lo, "samfunnsøkonomisk"))
 keywordmentions <- hearingtext %>% 
   mutate(priority_level = case_when(
     str_detect(fulltext_lo, "fn-sambandet") ~ "1",
-    str_detect(fulltext_lo, "una") ~ "1",
+    str_detect(fulltext_lo, "una") ~ "1", #find another funtion as this find all words that include "una"
     str_detect(fulltext_lo, "united nations association") ~ "1",
-    str_detect(fulltext_lo, "fn sambandet") ~ "1"
+    str_detect(fulltext_lo, "fn sambandet") ~ "1",
     str_detect(fulltext_lo, "ubu") ~ "2",
     str_detect(fulltext_lo, "utdanning for bærekraftig utvikling") ~ "2",
     str_detect(fulltext_lo, "utdanning i bærekraftig utvikling") ~ "2",
@@ -166,11 +166,32 @@ keywordmentions <- hearingtext %>%
     str_detect(fulltext_lo, "unep") ~ "3",
     str_detect(fulltext_lo, "fao") ~ "3",
   ))
+#keywordmentions includes NAs and is therefore not fit for presentation
+
   
-#now we create a subset that only contains the rows with relevant mentions
+#therefore we create a subset that only contains the rows with relevant mentions
 keyword_subset <- keywordmentions %>% 
   filter(str_detect(fulltext_lo, "fn-sambandet")|
+           str_detect(fulltext_lo, "una")| #find another funtion as this find all words that include "una"
+           str_detect(fulltext_lo, "united nations association")|
+           str_detect(fulltext_lo, "fn sambandet")|
            str_detect(fulltext_lo, "ubu")|
+           str_detect(fulltext_lo, "utdanning for bærekraftig utvikling")|
+           str_detect(fulltext_lo, "utdanning i bærekraftig utvikling")|
+           str_detect(fulltext_lo, "utdanning om bærekraftig utvikling")|
+           str_detect(fulltext_lo, "education for sustainable development")|
+           str_detect(fulltext_lo, "education for sustainability")|
+           str_detect(fulltext_lo, "esd")|
+           str_detect(fulltext_lo, "delmål 4.7")|
+           str_detect(fulltext_lo, "bærekraftsmål 4")|
+           str_detect(fulltext_lo, "sdg 4")|
+           str_detect(fulltext_lo, "ilo")|
+           str_detect(fulltext_lo, "unesco")|
+           str_detect(fulltext_lo, "who")|
+           str_detect(fulltext_lo, "fao")|
+           str_detect(fulltext_lo, "wfp")|
+           str_detect(fulltext_lo, "undp")|
+           str_detect(fulltext_lo, "unep")|
            str_detect(fulltext_lo, "unicef"))
   
 #now we create a full subset called "subfullset" in which we include hearing ids beside the keyword_subset variables
@@ -197,10 +218,14 @@ ggplot(keywordmentions, aes(x = committee_id, fill = priority_level)) +
   theme_bw()
 #keywordmentions includes NAs and is therefore not fit for presentation
 
-?ggplot2
 
+#creating a color palette for colorblind people as an object for later use
+cbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+#plotting only the relevant keyword mentions after priority
 ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) + 
-  geom_bar() +
+  geom_bar(position = position_dodge(width = 0.8)) +
+  scale_fill_brewer(palette = "Greens") +
   labs(title = "Keyword Mentions in Hearings",
        x = "Storting Sessions",
        y = "Number of Mentions",
@@ -211,7 +236,8 @@ ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) +
   theme(legend.position = "right",
         plot.caption.position = "plot") +
   theme_light() +
-  coord_cartesian(ylim = c(0,15))
+  coord_cartesian(ylim = c(0,150))
+
 
  
 
