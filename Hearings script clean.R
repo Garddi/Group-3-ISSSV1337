@@ -136,10 +136,11 @@ hearingtext$fulltext[str_which(hearingtext$fulltext_lo, "4.7")]
 
 #this string detects whether or not an input contains "samfunnsøokonomisk"
 str_detect(hearingtext$fulltext_lo,"samfunnsøkonomisk")
+# and this one counts the mentions again
 sum(str_detect(hearingtext$fulltext_lo, "samfunnsøkonomisk"))
 #53 mentions
 
-#Now we prepare plotting and create new variables that unite all the keyword searches after priority
+#Now we prepare plotting by creating new variables that unite all the keyword searches after priority
 keywordmentions <- hearingtext %>% 
   mutate(priority_level = case_when(
     str_detect(fulltext_lo, "fn-sambandet") ~ "1",
@@ -153,26 +154,30 @@ keyword_subset <- keywordmentions %>%
            str_detect(fulltext_lo, "ubu")|
            str_detect(fulltext_lo, "unicef"))
   
-#now we 
+#now we create a full subset called "subfullset" in which we include hearing ids beside the keyword_subset variables
 ?left_join
 keyword_subset <- left_join(keyword_subset, subfullset, by = c("hearing_id"))
 
+#changing the full subset to contain hearing ids and session ids selected from allsessionhearings dataset
 subfullset <- allsessionshearings %>% 
   select(hearing_id, session_id)
 
-#
+#now we are combining datasets containing both hearing id and session id 
 newkeywordmentions <- left_join(keywordmentions, subfullset, by = c("hearing_id"))
-keywordmentions <- left_join(allsessionshearings, sess , by = c("session_id"))
+keywordmentions <- left_join(allsessionshearings, sess , by = c("session_id")) #can delete this maybe?
 
-ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) + 
-  geom_bar()
-
+#why do we use the table here?
 table(allsessionshearings$session_id)
 
+
+#with newkeywordmentions containing session ids and keywordmentions we can now plot
 
 #now we are trying to plot these variables
 ggplot(keywordmentions, aes(x = committee_id, fill = priority_level)) + 
   geom_bar() + 
   theme_bw()
+
+ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) + 
+  geom_bar()
  
 
