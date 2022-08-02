@@ -1,0 +1,42 @@
+---
+title: "Presentation, Case FN-sambandet"
+author: "Group 3"
+date: "ISSSV1337"
+output: ioslides_presentation
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = FALSE, message = FALSE)
+library(tidyverse)
+```
+```
+
+
+
+## Contents 
+### Introduction
+- Case description 
+
+### Methods 
+- Stortingscrape
+- Choice of keywords -> problems 
+
+### Problems
+
+### Results
+
+### Social media
+- How to do it yourself 
+
+### Policy implications
+
+
+
+## Key words 
+
+- Application
+- Priority list 
+
+
+  
