@@ -180,6 +180,34 @@ questiontokens <- assembledtextquestions %>%
 questiontokens <- questiontokens %>%
   anti_join(stop_words, by = "word") # Joining against the stopwords dataframe to get rid of cells with stopwords
 
+## Brief category investigation, stock companies are frequent
+
+questiontokens %>%
+  count(id, word, sort = TRUE)
+
+## Creating the document feature matrix
+
+questiontokens <- questiontokens %>%
+  mutate(stem = wordStem(word, language = "norwegian"))
+
+questiontokens_dfm <- questiontokens %>%
+  count(id, stem, name = "count") %>% # By default, the count-variable is called "n". Use name = "" to change it.
+  cast_dfm(id, # Specify the douments in your analysis (becoming the rows)
+           stem, # Specify the tokens in your analysis (becoming the columns)
+           count) # Specify the number of times each token shows up in each document (becoming the cells)
+
+## Saving these objects, ready for analysis, note that the tokens dataframe
+## is far too large to be uploaded to GitHub
+
+save(questiontokens_dfm, file = "Question_Data/questionsdfm.Rdata")
+save(questiontokens, file = "Question_Data/questiontokens.Rdata")
+
+```
+
+With the document feature matrix, we can apply an stm function to it. We run it with 75 categories, slightly more than what the package itself reccommends for a corpus of this size.
+
+```{r, eval=FALSE}
+
 
 
 ```
