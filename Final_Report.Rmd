@@ -2,7 +2,7 @@
 title: "ISSSV-1337, Group 3 Report UN Association of Norway"
 author: "Gard Olav Dietrichson, Hannes Brauer, Markus Opheim, Andreas Kroknes, Ingrid Johannesen, Nora Didriksen, Tia Tiller"
 date: '2022-07-25'
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -33,7 +33,7 @@ Finally it is worth mentioning that we also foresaw the large amount of document
 
 Below we include a setup code for the things we do in this script, this primarily includes the relevant packages, but also included is a function for a colourblind safe palette, given that we are interested in accessibility. 
 
-```{r,eval=TRUE, echo=FALSE}
+```{r,eval=TRUE, message=FALSE}
 
 library(tidyverse)
 library(stortingscrape)
@@ -42,6 +42,11 @@ library(quanteda)
 library(stm)
 library(tidyr)
 library(viridis)
+library(SnowballC)
+library(haven)
+library(rvest)
+library(xml2)
+library(httr)
 
 
 safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", 
@@ -50,6 +55,7 @@ safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77",
                              "#661100", "#6699CC", "#888888")
 
 
+Sys.setlocale(category = "LC_ALL", "")
 
 ```
 ## Sectioning 
@@ -71,7 +77,7 @@ The questions were scraped, below is the plot drawing the overview of the spread
  
 In order to answer this, we scrape all the questions from the storting's homepage. The following code scrapes all the questions for our relevant time frame. 
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 
 ## For now the sessions we are interested in are limited to 2011-2022
 
@@ -97,11 +103,15 @@ b<-list()
 c<-list()
 
 for(x in unique(sessions_storting$id)){
-  a[[x]] <- get_session_questions(sessionid = x, q_type = "interpellasjoner", status = NA, good_manners = 0)
-  b[[x]] <- get_session_questions(sessionid = x, q_type = "sporretimesporsmal", status = NA, good_manners = 0)
-  c[[x]] <- get_session_questions(sessionid = x, q_type = "skriftligesporsmal", status = NA, good_manners = 0)
-  
-  #paste0("stortingsporsmal", x) = rbind(a, b, c)
+  a[[x]] <- get_session_questions(sessionid = x, 
+                                  q_type = "interpellasjoner", 
+                                  status = NA, good_manners = 0)
+  b[[x]] <- get_session_questions(sessionid = x, 
+                                  q_type = "sporretimesporsmal",
+                                  status = NA, good_manners = 0)
+  c[[x]] <- get_session_questions(sessionid = x, 
+                                  q_type = "skriftligesporsmal", 
+                                  status = NA, good_manners = 0)
 }
 
 ## Unlisting all of the resulting lists, they are lists of identically 
@@ -198,8 +208,9 @@ questiontokens <- assembledtextquestions %>%
 
 ## Removing all stopwords from my stop words book
 
+# Joining against the stopwords dataframe to get rid of cells with stopwords
 questiontokens <- questiontokens %>%
-  anti_join(stop_words, by = "word") # Joining against the stopwords dataframe to get rid of cells with stopwords
+  anti_join(stop_words, by = "word") 
 
 ## Brief category investigation, stock companies are frequent
 
@@ -212,10 +223,10 @@ questiontokens <- questiontokens %>%
   mutate(stem = wordStem(word, language = "norwegian"))
 
 questiontokens_dfm <- questiontokens %>%
-  count(id, stem, name = "count") %>% # By default, the count-variable is called "n". Use name = "" to change it.
-  cast_dfm(id, # Specify the douments in your analysis (becoming the rows)
-           stem, # Specify the tokens in your analysis (becoming the columns)
-           count) # Specify the number of times each token shows up in each document (becoming the cells)
+  count(id, stem, name = "count") %>% 
+  cast_dfm(id, 
+           stem, 
+           count) 
 
 ## Saving these objects, ready for analysis, note that the tokens dataframe
 ## is far too large to be uploaded to GitHub
@@ -233,8 +244,9 @@ questiontokens_lda_75 <- stm(questiontokens_dfm,
                              K = 75,
                              seed = 910,
                              verbose = TRUE, 
-                             max.em.its = 100, ## You can adjust these numbers
-                             emtol = 1e-5) ## However, too high numbers will drastically increase computing time
+                             max.em.its = 100, # You can adjust these numbers
+                             emtol = 1e-5) # However, too high numbers will 
+                                          #drastically increase computing time
 
 
 save(questiontokens_lda_75, file = "Question_Analysis/QuestionSTM_K75.Rdata")
@@ -250,6 +262,7 @@ The next step is then to make a grouping of the tokens, and creating a frame of 
 ```{r, eval=TRUE}
 
 load("Question_Analysis/QuestionSTM_K75.Rdata")
+load("Question_Data/questionsdfm.Rdata")
 
 questiontopics_75 <- tidy(questiontokens_lda_75, 
                        matrix = "beta")
@@ -261,45 +274,14 @@ questiontopics_group_75 <- questiontopics_75 %>%
   slice_max(beta, n = 10) %>% # Fetching the 10 terms with the highest beta
   ungroup() # Ungrouping to get the dataframe back to normal
 
-### This is to create 
+## Quite difficult to plot all of them at the same time, so that is not included
+## here, but is has been done in order to find some interesting topics. 
 
-questiontopics_group_75_1 <- questiontopics_group_75 %>%
-  filter(topic %in% c(1:8))
-
-questiontopics_group_75_2 <- questiontopics_group_75 %>%
-  filter(topic %in% c(9:15))
-
-questiontopics_group_75_3 <- questiontopics_group_75 %>%
-  filter(topic %in% c(16:23))
-
-questiontopics_group_75_4 <- questiontopics_group_75 %>%
-  filter(topic %in% c(24:30))
-
-questiontopics_group_75_5 <- questiontopics_group_75 %>%
-  filter(topic %in% c(31:38))
-
-questiontopics_group_75_6 <- questiontopics_group_75 %>%
-  filter(topic %in% c(39:45))
-
-questiontopics_group_75_7 <- questiontopics_group_75 %>%
-  filter(topic %in% c(46:53))
-
-questiontopics_group_75_8 <- questiontopics_group_75 %>%
-  filter(topic %in% c(54:60))
-
-questiontopics_group_75_9 <- questiontopics_group_75 %>%
-  filter(topic %in% c(61:68))
-
-questiontopics_group_75_10 <- questiontopics_group_75 %>%
-  filter(topic %in% c(68:75))
-
-## These groupings can be used later, when we discover what topics become
-## We can then use these groupings to sort out what the topics really are about
 
 #### Making the matrix of Gammas for each document
 
-question_doc_prob_75 <- tidy(questiontokens_lda_75, matrix = "gamma", # Calculating document probabilities
-                    document_names = rownames(questiontokens_dfm)) # Adding the question id's
+question_doc_prob_75 <- tidy(questiontokens_lda_75, matrix = "gamma", 
+                    document_names = rownames(questiontokens_dfm)) 
 
 ### Then we assign each document their top 3 topics 
 
@@ -536,7 +518,7 @@ textrelevance <- textrelevance %>%
            str_detect(justification_l, "bærekraftsmål") ~ "3",
            str_detect(text_q_l, "berekraftsmål") ~ "3",
            str_detect(text_a_l, "berekraftsmål") ~ "3",
-           str_detect(justification_l, "berekraftsmål") ~ "3"
+           str_detect(justification_l, "berekraftsmål") ~ "3",
            str_detect(text_q_l, "2030-agendaen") ~ "3",
            str_detect(text_a_l, "2030-agendaen") ~ "3",
            str_detect(justification_l, "2030-agendaen") ~ "3",
@@ -549,6 +531,8 @@ textrelevance <- textrelevance %>%
 
 ## First we need to get all the mps for the period, then join them with the full 
 ## dataset
+
+periods_storting <- get_parlperiods()
 
 periods_storting <- periods_storting %>%
   filter(id %in% c("2021-2025", "2017-2021", "2013-2017", "2009-2013"))
@@ -587,21 +571,21 @@ textrelevancewparty <- left_join(textrelevance, allmpsparties,
 
 textrelevancewparty <- textrelevancewparty %>% 
   mutate(govposition = case_when(party_id == "A" & session_id == "2021-2022" ~ "Government",
-                                 party_id == "Sp" & session_id == "2021-2022" ~ "Government",
-                                 party_id == "SV" & session_id == "2021-2022" ~ "Confidence and Supply",
-                                 party_id == "H" & session_id == "2021-2022" ~ "Opposition",
-                                 party_id == "FrP" & session_id == "2021-2022" ~ "Opposition",
-                                 party_id == "KrF" & session_id == "2021-2022" ~ "Opposition",
-                                 party_id == "MDG" & session_id == "2021-2022" ~ "Opposition",
-                                 party_id == "R" & session_id == "2021-2022" ~ "Opposition",
-                                 party_id == "V" & session_id == "2021-2022" ~ "Opposition",
-                                 party_id == "A" & session_id == "2020-2021" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2020-2021" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2020-2021" ~ "Opposition",
-                                 party_id == "H" & session_id == "2020-2021" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2020-2021" ~ "Confidence and Supply",
-                                 party_id == "KrF" & session_id == "2020-2021" ~ "Government",
-                                 party_id == "MDG" & session_id == "2020-2021" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2021-2022" ~ "Government",
+                    party_id == "SV" & session_id == "2021-2022" ~ "Confidence and Supply",
+                    party_id == "H" & session_id == "2021-2022" ~ "Opposition",
+                    party_id == "FrP" & session_id == "2021-2022" ~ "Opposition",
+                    party_id == "KrF" & session_id == "2021-2022" ~ "Opposition",
+                    party_id == "MDG" & session_id == "2021-2022" ~ "Opposition",
+                    party_id == "R" & session_id == "2021-2022" ~ "Opposition",
+                    party_id == "V" & session_id == "2021-2022" ~ "Opposition",
+                    party_id == "A" & session_id == "2020-2021" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2020-2021" ~ "Opposition",
+                    party_id == "SV" & session_id == "2020-2021" ~ "Opposition",
+                    party_id == "H" & session_id == "2020-2021" ~ "Government", 
+                    party_id == "FrP" & session_id == "2020-2021" ~ "Confidence and Supply",
+                    party_id == "KrF" & session_id == "2020-2021" ~ "Government",
+                    party_id == "MDG" & session_id == "2020-2021" ~ "Opposition",
                                  party_id == "R" & session_id == "2020-2021" ~ "Opposition",
                                  party_id == "V" & session_id == "2020-2021" ~ "Government",
                                  party_id == "A" & session_id == "2019-2020" ~ "Opposition",
@@ -692,6 +676,11 @@ textrelevancewparty <- textrelevancewparty %>%
 Now that we have a dataset with more info, lets look at some of the patterns we can notice over time.
 
 ```{r, eval=TRUE}
+ggplot(textrelevancewparty, aes(x = session_id, fill = priority_word_level)) + 
+  geom_bar() + 
+  scale_fill_discrete(type = safe_colorblind_palette) + 
+  theme_bw()
+
 ggplot(textrelevancewparty, aes(x = session_id, fill = party_id)) + 
   geom_bar() + 
   scale_fill_discrete(type = safe_colorblind_palette) + 
@@ -705,5 +694,650 @@ ggplot(textrelevancewparty, aes(x = session_id, fill = govposition)) +
   geom_bar() + 
   scale_fill_viridis(discrete = TRUE) + 
   theme_bw()
+```
+
+We see a clear spike in mentions in 2021-2022, likely due to the war in Ukraine. In order to further evaluate this patterns, we need to create a comparison to all the questions being asked, that is plotted below. 
+
+```{r, eval=TRUE}
+
+## Creating the same variables in the full dataframe (this is in fact a very 
+## overcomplicated way of doing this, but it was done this way and now its legacy 
+## code)
+
+questiontext2 <- questiontext %>%
+  mutate(period_id = case_when(session_id == "2021-2022" ~ "2021-2025",
+                               session_id == "2020-2021" ~ "2017-2021",
+                               session_id == "2019-2020" ~ "2017-2021",
+                               session_id == "2018-2019" ~ "2017-2021",
+                               session_id == "2017-2018" ~ "2017-2021",
+                               session_id == "2016-2017" ~ "2013-2017",
+                               session_id == "2015-2016" ~ "2013-2017",
+                               session_id == "2014-2015" ~ "2013-2017",
+                               session_id == "2013-2014" ~ "2013-2017",
+                               session_id == "2012-2013" ~ "2009-2013",
+                               session_id == "2011-2012" ~ "2009-2013"))
+
+questiontextwparty <- left_join(questiontext2, allmpsparties, 
+                                 by = c("question_from_id", "period_id"))
+
+
+questiontextwparty <- questiontextwparty %>% 
+  mutate(govposition = case_when(party_id == "A" & session_id == "2021-2022" ~ "Government",
+                                 party_id == "Sp" & session_id == "2021-2022" ~ "Government",
+                                 party_id == "SV" & session_id == "2021-2022" ~ "Supply and Confidence",
+                                 party_id == "H" & session_id == "2021-2022" ~ "Opposition",
+                                 party_id == "FrP" & session_id == "2021-2022" ~ "Opposition",
+                                 party_id == "KrF" & session_id == "2021-2022" ~ "Opposition",
+                                 party_id == "MDG" & session_id == "2021-2022" ~ "Opposition",
+                                 party_id == "R" & session_id == "2021-2022" ~ "Opposition",
+                                 party_id == "V" & session_id == "2021-2022" ~ "Opposition",
+                                 party_id == "A" & session_id == "2020-2021" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2020-2021" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2020-2021" ~ "Opposition",
+                                 party_id == "H" & session_id == "2020-2021" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2020-2021" ~ "Supply and Confidence",
+                                 party_id == "KrF" & session_id == "2020-2021" ~ "Government",
+                                 party_id == "MDG" & session_id == "2020-2021" ~ "Opposition",
+                                 party_id == "R" & session_id == "2020-2021" ~ "Opposition",
+                                 party_id == "V" & session_id == "2020-2021" ~ "Government",
+                                 party_id == "A" & session_id == "2019-2020" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2019-2020" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2019-2020" ~ "Opposition",
+                                 party_id == "H" & session_id == "2019-2020" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2019-2020" ~ "Supply and Confidence",
+                                 party_id == "KrF" & session_id == "2019-2020" ~ "Government",
+                                 party_id == "MDG" & session_id == "2019-2020" ~ "Opposition",
+                                 party_id == "R" & session_id == "2019-2020" ~ "Opposition",
+                                 party_id == "V" & session_id == "2019-2020" ~ "Government",
+                                 party_id == "A" & session_id == "2018-2019" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2018-2019" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2018-2019" ~ "Opposition",
+                                 party_id == "H" & session_id == "2018-2019" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2018-2019" ~ "Government",
+                                 party_id == "KrF" & session_id == "2018-2019" ~ "Government",
+                                 party_id == "MDG" & session_id == "2018-2019" ~ "Opposition",
+                                 party_id == "R" & session_id == "2018-2019" ~ "Opposition",
+                                 party_id == "V" & session_id == "2018-2019" ~ "Government",
+                                 party_id == "A" & session_id == "2017-2018" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2017-2018" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2017-2018" ~ "Opposition",
+                                 party_id == "H" & session_id == "2017-2018" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2017-2018" ~ "Government",
+                                 party_id == "KrF" & session_id == "2017-2018" ~ "Supply and Confidence",
+                                 party_id == "MDG" & session_id == "2017-2018" ~ "Opposition",
+                                 party_id == "R" & session_id == "2017-2018" ~ "Opposition",
+                                 party_id == "V" & session_id == "2017-2018" ~ "Government",
+                                 party_id == "A" & session_id == "2016-2017" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2016-2017" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2016-2017" ~ "Opposition",
+                                 party_id == "H" & session_id == "2016-2017" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2016-2017" ~ "Government",
+                                 party_id == "KrF" & session_id == "2016-2017" ~ "Supply and Confidence",
+                                 party_id == "MDG" & session_id == "2016-2017" ~ "Opposition",
+                                 party_id == "R" & session_id == "2016-2017" ~ "Opposition",
+                                 party_id == "V" & session_id == "2016-2017" ~ "Supply and Confidence",
+                                 party_id == "A" & session_id == "2015-2016" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2015-2016" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2015-2016" ~ "Opposition",
+                                 party_id == "H" & session_id == "2015-2016" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2015-2016" ~ "Government",
+                                 party_id == "KrF" & session_id == "2015-2016" ~ "Supply and Confidence",
+                                 party_id == "MDG" & session_id == "2015-2016" ~ "Opposition",
+                                 party_id == "R" & session_id == "2015-2016" ~ "Opposition",
+                                 party_id == "V" & session_id == "2015-2016" ~ "Supply and Confidence",
+                                 party_id == "A" & session_id == "2014-2015" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2014-2015" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2014-2015" ~ "Opposition",
+                                 party_id == "H" & session_id == "2014-2015" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2014-2015" ~ "Government",
+                                 party_id == "KrF" & session_id == "2014-2015" ~ "Supply and Confidence",
+                                 party_id == "MDG" & session_id == "2014-2015" ~ "Opposition",
+                                 party_id == "R" & session_id == "2014-2015" ~ "Opposition",
+                                 party_id == "V" & session_id == "2014-2015" ~ "Supply and Confidence",
+                                 party_id == "A" & session_id == "2013-2014" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2013-2014" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2013-2014" ~ "Opposition",
+                                 party_id == "H" & session_id == "2013-2014" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2013-2014" ~ "Government",
+                                 party_id == "KrF" & session_id == "2013-2014" ~ "Supply and Confidence",
+                                 party_id == "MDG" & session_id == "2013-2014" ~ "Opposition",
+                                 party_id == "R" & session_id == "2013-2014" ~ "Opposition",
+                                 party_id == "V" & session_id == "2013-2014" ~ "Supply and Confidence",
+                                 party_id == "A" & session_id == "2012-2013" ~ "Government",
+                                 party_id == "Sp" & session_id == "2012-2013" ~ "Government",
+                                 party_id == "SV" & session_id == "2012-2013" ~ "Government",
+                                 party_id == "H" & session_id == "2012-2013" ~ "Opposition", 
+                                 party_id == "FrP" & session_id == "2012-2013" ~ "Opposition",
+                                 party_id == "KrF" & session_id == "2012-2013" ~ "Opposition",
+                                 party_id == "MDG" & session_id == "2012-2013" ~ "Opposition",
+                                 party_id == "R" & session_id == "2012-2013" ~ "Opposition",
+                                 party_id == "V" & session_id == "2012-2013" ~ "Opposition",
+                                 party_id == "A" & session_id == "2011-2012" ~ "Government",
+                                 party_id == "Sp" & session_id == "2011-2012" ~ "Government",
+                                 party_id == "SV" & session_id == "2011-2012" ~ "Government",
+                                 party_id == "H" & session_id == "2011-2012" ~ "Opposition", 
+                                 party_id == "FrP" & session_id == "2011-2012" ~ "Opposition",
+                                 party_id == "KrF" & session_id == "2011-2012" ~ "Opposition",
+                                 party_id == "MDG" & session_id == "2011-2012" ~ "Opposition",
+                                 party_id == "R" & session_id == "2011-2012" ~ "Opposition",
+                                 party_id == "V" & session_id == "2011-2012" ~ "Opposition"
+  ))
+
+## Plotting this 
+
+ggplot(questiontextwparty, aes(x = session_id, fill = govposition)) + 
+  geom_bar() + 
+  scale_fill_viridis(discrete = TRUE) + 
+  theme_bw()
+
+ggplot(questiontextwparty, aes(x = session_id, fill = gender)) + 
+  geom_bar() + 
+  scale_fill_viridis(discrete = TRUE)
+
+
+ggplot(questiontextwparty, aes(x = session_id, fill = party_id)) + 
+  geom_bar() + 
+  scale_fill_discrete(type = safe_colorblind_palette) + 
+  theme_bw()
 
 ```
+
+In summary, if we compare these to the results of our keyword containing documents, we see similar patterns in terms of both gender and government position, this is perhaps unsurprising. We do however see some significant differences in terms of parties asking questions. The liberal party (V) and the Socialist Left (SV) are heavily overrepresented. In addition the Progress party (FrP), was much more active during the Stoltenberg 2 Government, than they are against the Støre government. Hinting at abandoning a focus on international aid, perhaps due to the leadership change in 2020. 
+
+### What else can we use the topic model for?
+
+Interestingly the topic 47 seems to be about humanitarian aid and the UN in general, we can use this to find the documents that are most likely to be about UN. 
+
+```{r, eval=TRUE}
+## The Gamma for these documents are in fact quite high. But more importantly 
+## they touch on the UN and their activities in a manner unrelated to security
+## policy. 
+
+topic47docs <- question_doc_prob_75 %>% 
+  filter(topic == 47) %>% 
+  slice_max(order_by = gamma, n = 650) 
+
+top100question <- questiontextwparty %>% 
+  filter(id %in% topic47docs$document)
+
+ggplot(top100question, aes(x = session_id, fill = party_id)) + 
+  geom_bar() +
+  scale_fill_discrete(type = safe_colorblind_palette) +
+  theme_bw()
+
+ggplot(top100question, aes(x = session_id, fill = govposition)) + 
+  geom_bar() +
+  scale_fill_discrete(type = safe_colorblind_palette) +
+  theme_bw()
+
+ggplot(top100question, aes(x = session_id, fill = gender)) + 
+  geom_bar() + 
+  scale_fill_discrete(type = safe_colorblind_palette) + 
+  theme_bw()
+
+```
+
+Similar patterns as in the original keywords.
+
+Lets now look at some other categories inside the topic model, and whether they are of interest. By looking closely at the different topics, we find that topics 30, 33, 43, 52, 54, and 63 are of interest. These topics primarily look at climate and conservation topics. However, topic 30 and 52 are interesting in particular. Topic 30 seems to be about making requirements of the minister that is being asked the question, attempting to hold them accountable. A correlation on this topic would imply that MPs are using the UN and their talking points to drive forwards critique of the government, holding them accountable. Topic 52 is also interesting because it is about higher education, and relating that to the UN and their suborganisations would be helpful to see if they connect it to the activities of global development. To explore these topics, we plot the density of the gammas of our top topic 47 documents, to see to what degree they actually measure this. 
+
+```{r, eval=TRUE}
+
+#Topic 30 is related to questions asked that require the minister in charge to do
+# something. 
+
+top_docs100topic30 <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  filter(topic == 30 & document %in% top100question$id)
+
+ggplot(top_docs100topic30, aes(x = gamma)) + 
+  geom_density() + 
+  theme_bw() + 
+  labs(title = "Density of Topic 30")
+
+#Topic 33 is about emissions. 
+
+top_docs100topic33 <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  filter(topic == 33 & document %in% top100question$id)
+
+ggplot(top_docs100topic33, aes(x = gamma)) + 
+  geom_density() + 
+  theme_bw() + 
+  labs(title = "Density of Topic 33")
+
+#Topic 43 is about sustainability. 
+
+top_docs100topic43 <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  filter(topic == 43 & document %in% top100question$id)
+
+ggplot(top_docs100topic43, aes(x = gamma)) + 
+  geom_density() + 
+  theme_bw() + 
+  labs(title = "Density of Topic 43")
+
+
+#Topic 52, Higher education
+
+top_docs100topic52 <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  filter(topic == 52 & document %in% top100question$id)
+
+ggplot(top_docs100topic52, aes(x = gamma)) + 
+  geom_density() + 
+  theme_bw() + 
+  labs(title = "Density of Topic 52")
+
+
+#Topic 54, more climate emissions
+
+top_docs100topic54 <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  filter(topic == 54 & document %in% top100question$id)
+
+ggplot(top_docs100topic54, aes(x = gamma)) + 
+  geom_density() + 
+  theme_bw() + 
+  labs(title = "Density of Topic 54")
+
+
+#Topic 63, Environmentalism
+
+top_docs100topic63 <- question_doc_prob_75 %>%
+  group_by(document) %>% # Find the next statistic per document
+  filter(topic == 63 & document %in% top100question$id)
+
+ggplot(top_docs100topic63, aes(x = gamma)) + 
+  geom_density() + 
+  theme_bw() + 
+  labs(title = "Density of Topic 63")
+
+```
+
+Quite low charges on all, save for topic 30, which performs best. The clear thing take away, especially in regards to education is that the MPs are not actively using the UN in talking about development, nor in terms of sustainability. A clear goal for the future lobbying should be to attempt to make sure that 4.7 becomes its own topic, together with keywords like education. Unfortunately, our model does not find this. Primarily because 4.7 appears quite rarely in the questions. 
+
+```{r, eval=TRUE}
+table(questiontext$session_id[which(str_detect(questiontext$text_a_l, "delmål 4.7")| 
+                                str_detect(questiontext$text_a_l, "bærekraftsmål 4") |
+                                str_detect(questiontext$text_a_l, "utdanning for bærekraftig utvikling") |
+                                str_detect(questiontext$text_q_l, "delmål 4.7")| 
+                                str_detect(questiontext$text_q_l, "bærekraftsmål 4") |
+                                str_detect(questiontext$text_q_l, "utdanning for bærekraftig utvikling") |
+                                str_detect(questiontext$justification_l, "delmål 4.7")| 
+                                str_detect(questiontext$justification_l, "bærekraftsmål 4") |
+                                str_detect(questiontext$justification_l, "utdanning for bærekraftig utvikling"))])
+
+```
+
+As we can see, we see only 4 mentions of sustainable development related keyphrases in our set of questions. This is despite the fact that we see quite a lot more mentions of education in general. 
+
+```{r, eval=TRUE}
+table(questiontext$session_id[which(str_detect(questiontext$text_a_l, "utdanning") |
+                                      str_detect(questiontext$text_q_l, "utdanning") |
+                                      str_detect(questiontext$justification_l, "utdanning"))])
+```
+
+On average, about 200 questions are asked every session about education, but none of these speak of sustainable development, or about the UNs sustainability goals. 
+
+
+
+
+# Budget
+
+*Before we begin, allow me to paint you the full picture...*
+
+In the process of retrieving mentions of some of the suborganisations in the decisions, we quickly found that the decisions that mention this largely consists of budgets. This piqued our interest as we could retrieve the money that is allocated to some of the organisations of the UN over time, thereby meeting a requirement of "quantitative analysis" on the activities of the UNA, given that their main priority is securing funding for the amazing organisations that they work with. 
+
+Below is a hidden chunk which creates a new function, because the get_case function from Stortingscrape did not perform as expected. It creates the function get_case_fancey, which does the same as get_case, but it actually works.
+```{r, eval=TRUE, echo=FALSE, include=FALSE}
+get_case_fancey <- function (caseid = NA, good_manners = 0) 
+{
+  url <- paste0("https://data.stortinget.no/eksport/sak?sakid=", 
+                caseid)
+  base <- GET(url)
+  resp <- http_type(base)
+  if (resp != "text/xml") 
+    stop(paste0("Response of ", url, " is not text/xml."), 
+         call. = FALSE)
+  status <- http_status(base)
+  if (status$category != "Success") 
+    stop(paste0("Response of ", url, " returned as '", status$message, 
+                "'"), call. = FALSE)
+  tmp <- read_html(base)
+  tmp2 <- list(root = data.frame(response_date = tmp %>% html_elements("detaljert_sak > respons_dato_tid") %>% 
+                                   html_text(), version = tmp %>% html_elements("detaljert_sak > versjon") %>% 
+                                   html_text(), document_group = tmp %>% html_elements("detaljert_sak > dokumentgruppe") %>% 
+                                   html_text(), finalized = tmp %>% html_elements("ferdigbehandlet") %>% 
+                                   html_text(), reference = tmp %>% html_elements("henvisning") %>% 
+                                   html_text(), id = tmp %>% html_elements("detaljert_sak > id") %>% 
+                                   html_text(), req_text = tmp %>% html_elements("innstillingstekst") %>% 
+                                   html_text(), committee_id = ifelse(identical(tmp %>% 
+                                                                                  html_elements("komite > id") %>% html_text(), character()), 
+                                                                      "", tmp %>% html_elements("komite > id") %>% html_text()), 
+                                 title_short = tmp %>% html_elements("korttittel") %>% 
+                                   html_text(), decision_short = tmp %>% html_elements("kortvedtak") %>% 
+                                   html_text(), parenthesis_text = tmp %>% html_elements("parentestekst") %>% 
+                                   html_text(), case_number = tmp %>% html_elements("sak_nummer") %>% 
+                                   html_text(), session_id = tmp %>% html_elements("sak_sesjon") %>% 
+                                   html_text(), proceedings_id = tmp %>% html_elements("saksgang > id") %>% 
+                                   html_text(), proceedings_name = tmp %>% html_elements("saksgang > navn") %>% 
+                                   html_text(), status = tmp %>% html_elements("detaljert_sak > status") %>% 
+                                   html_text(), title = tmp %>% html_elements("detaljert_sak > tittel") %>% 
+                                   html_text(), type = tmp %>% html_elements("detaljert_sak > type") %>% 
+                                   html_text(), decision_text = tmp %>% html_elements("detaljert_sak > vedtakstekst") %>% 
+                                   html_text()), topic = data.frame(is_main_topic = tmp %>% 
+                                                                      html_elements("emne > er_hovedemne") %>% html_text(), 
+                                                                    main_topic_id = tmp %>% html_elements("emne > hovedemne_id") %>% 
+                                                                      html_text(), id = tmp %>% html_elements("emne > id") %>% 
+                                                                      html_text(), navn = tmp %>% html_elements("emne > navn") %>% 
+                                                                      html_text()), publication_references = data.frame(export_id = tmp %>% 
+                                                                                                                          html_elements("publikasjon_referanse > eksport_id") %>% 
+                                                                                                                          html_text(), link_text = tmp %>% html_elements("publikasjon_referanse > lenke_tekst") %>% 
+                                                                                                                          html_text(), link_url = tmp %>% html_elements("publikasjon_referanse > lenke_url") %>% 
+                                                                                                                          html_text(), type = tmp %>% html_elements("publikasjon_referanse > type") %>% 
+                                                                                                                          html_text(), subtype = tmp %>% html_elements("publikasjon_referanse > undertype") %>% 
+                                                                                                                          html_text()), proceeding_steps = data.frame(step_name = tmp %>% 
+                                                                                                                                                                                                               html_elements("saksgang_steg > navn") %>% html_text(), 
+                                                                                                                                                                                                             step_number = tmp %>% html_elements("saksgang_steg > steg_nummer") %>% 
+                                                                                                                                                                                                               html_text(), outdated = tmp %>% html_elements("saksgang_steg > uaktuell") %>% 
+                                                                                                                                                                                                               html_text()), spokespersons = data.frame(mp_id = tmp %>% 
+                                                                                                                                                                                                                                                          html_elements("saksordfoerer_liste > representant > id") %>% 
+                                                                                                                                                                                                                                                          html_text(), party_id = tmp %>% html_elements("saksordfoerer_liste > representant > parti > id") %>% 
+                                                                                                                                                                                                                                                          html_text(), sub_mp = tmp %>% html_elements("saksordfoerer_liste > representant > vara_representant") %>% 
+                                                                                                                                                                                                                                                          html_text()), keywords = data.frame(keyword = tmp %>% 
+                                                                                                                                                                                                                                                                                                html_elements("stikkord_liste > string") %>% html_text()))
+  Sys.sleep(good_manners)
+  return(tmp2)
+}
+
+```
+
+Lets then get on to getting the decisions that turn out to be about the UN activities. 
+
+```{r, eval=TRUE}
+
+a <- list()
+
+## For loop that fetches all of our fun stuff
+
+for(x in unique(sessions_storting$id)){
+  it <- 100*(which(unique(sessions_storting$id) == x) / length(unique(sessions_storting$id)))
+  cat(paste0(sprintf("Progress: %.4f%%             ", it), "\r"))
+  
+  a[[x]] <- get_session_decisions(sessionid = x, good_manners = 0)
+}
+
+all_decisions <- do.call("rbind", a)
+
+rm(a)
+
+## Lets filter it all out (this is not done properly because this is just 
+## showing how to accidentally stumble across something usable)
+
+UN_decisions <- all_decisions %>% 
+  mutate(decision_text_l = str_to_lower(decision_text),
+         title_text_l = str_to_lower(decision_title)) %>% 
+  filter(str_detect(decision_text_l, "fn-sambandet") | 
+           str_detect(title_text_l, "fn-sambandet") |
+           str_detect(decision_text_l, "utdanning for bærekraftig utvikling") |
+           str_detect(title_text_l, "utdanning for bærekraftig utvikling")| 
+           str_detect(decision_text_l, "unicef") |
+           str_detect(decision_text_l, "wfp") |
+           str_detect(decision_text_l, "unaids") |
+           str_detect(title_text_l, "unicef") |
+           str_detect(title_text_l, "wfp") | 
+           str_detect(title_text_l, "unaids"))
+
+## Omg its like only 15 stuffs, but what are they?? lets get the case
+
+a<-list()
+
+for (x in UN_decisions$case_id) {
+  it <- 100*(which(unique(UN_decisions$case_id) == x) / length(unique(UN_decisions$case_id)))
+  cat(paste0(sprintf("Progress: %.4f%%             ", it), "\r"))
+  
+  try(a[[x]] <- get_case_fancey(caseid = x, good_manners = 0))
+}
+
+### we got the decisions, wooo.
+
+### why is this here? who knows? its not used later, do with iteth whateth 
+### thoueth pleatheth. 
+
+b <- list()
+
+for (x in unique(UN_decisions$case_id)) {
+  b[[x]] <- a[[x]][["root"]]
+}
+
+### This seems to capture all budgets, which we can still use. 
+
+UN_cases <- do.call("rbind", b)
+
+```
+
+Inside the decision text we find the full budgets relevant to our area. By applying the magix of **regex** we can discover hitherto unknown treasures of information. (meaning we can find how much money each org gets every year, which would probably take us about 15 minutes to do manually, but thanks to the magic of automation we can turn a 15 minute task into a 3 day task, because we're programmers)
+
+```{r, eval=TRUE}
+
+## First i write a new function to retrieve strings next to the target words
+## we are interested in. 
+
+grab_text <- function(text, target, before, after){
+  min <- which(unlist(map(str_split(text, "\\s"), ~grepl(target, .x))))-before
+  max <- which(unlist(map(str_split(text, "\\s"), ~grepl(target, .x))))+after
+  
+  paste(str_split(text, "\\s")[[1]][min:max], collapse = " ")
+}
+
+## The text has been so dirty, we need to give it a good clean ;)
+
+for (i in 1:length(UN_decisions$decision_text_l)) {
+  tmp1 <- read_html(UN_decisions$decision_text_l[i])
+  
+  tmp2 <- html_text(tmp1)
+  
+  UN_decisions$cleanedtext_l[i] <- str_squish(str_remove_all(tmp2, "\r\n")) 
+  
+}
+
+## Lets make som empty lists, two sets of them even. 
+
+unicefbudget <- list()
+wfpbudget <- list()
+unaidsbudget <- list()
+undpbudget <- list()
+
+unicefbudgetn <- list()
+wfpbudgetn <- list()
+unaidsbudgetn <- list()
+undpbudgetn <- list()
+
+## Empty, like my skull
+
+### Lets look at what UNICEF gets 
+
+for (x in 1:length(UN_decisions$cleanedtext_l)) {
+  if(str_detect(UN_decisions$cleanedtext_l[x], "unicef")){
+  unicefbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "unicef", before = 1, after  = 14)
+  
+  if(str_detect(unicefbudget[[x]], "reduseres")){
+    tmpred <- grab_text(text = unicefbudget[[x]], target = "til", before = 0, after = 4)
+    tmp1 <- str_extract(tmpred, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
+    unicefbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
+  }else{
+  
+  tmp1 <- str_extract(unicefbudget[[x]], "([:digit:]{1,3}\\s?)[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{3}")
+  
+  unicefbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
+  }
+  }else{next}
+}
+
+
+unicefbudgets_t <- do.call("rbind", unicefbudgetn)
+
+unicefbudget_f <- data.frame(Year = c(2022,2021,2020,2019,2018,2017,
+                                      2016,2015,2014,2013,2012,2011),
+                             UnicefMoney = unicefbudgets_t)
+
+ggplot(unicefbudget_f, aes(x = Year, y = UnicefMoney)) + 
+  geom_point() + 
+  geom_line() + 
+  theme_bw() + 
+  labs(title = "UNICEF grants by year", y = "NOK", x = "") + 
+  scale_x_continuous(breaks = c(2011, 2012, 2013, 2014, 2015, 2016,
+                                2017, 2018, 2019, 2020, 2021, 2022))
+
+
+```
+
+By the looks of this, I would say that SV in government is associated with more money for UNICEF. 
+
+Lets look at WFP.
+
+```{r, eval=TRUE}
+for (x in 1:length(UN_decisions$cleanedtext_l)) {
+  if(str_detect(UN_decisions$cleanedtext_l[x], "wfp")){
+    wfpbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "wfp", before = 1, after  = 14)
+    if(str_detect(wfpbudget[[x]], "reduseres")){
+      tmpred <- grab_text(text = wfpbudget[[x]], target = "til", before = 0, after = 4)
+      tmp1 <- str_extract(tmpred, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
+      wfpbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
+    }else{
+      
+      if(str_detect(wfpbudget[[x]], "auka")){
+      tmpinc <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "wfp", before = 1, after = 20)
+      tmpinc2 <- grab_text(text = tmpinc, target = "til", before = 0, after = 5)
+      tmpinc3 <- str_extract(tmpinc2, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
+
+      wfpbudgetn[[x]] <- (as.numeric(str_remove_all(tmpinc3, " ")))
+      
+      }else{
+
+      tmp1 <- str_extract(wfpbudget[[x]], "([:digit:]{1,3}\\s?)[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{3}")
+
+      wfpbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
+    }}
+  }else{next}
+}
+
+
+wfpbudget_t <- do.call("rbind", wfpbudgetn)
+
+wfpbudget_f <- data.frame(Year = c(2022,2021,2020,2019,2018,2017,
+                                      2016,2015,2014,2013,2012,2011),
+                             WFPMoney = wfpbudget_t)
+
+ggplot(wfpbudget_f, aes(x = Year, y = WFPMoney)) + 
+  geom_point() + 
+  geom_line() + 
+  theme_bw() + 
+  labs(title = "WFP grants by year", y = "NOK", x = "") + 
+  scale_x_continuous(breaks = c(2011, 2012, 2013, 2014, 2015, 2016,
+                                2017, 2018, 2019, 2020, 2021, 2022))
+
+
+```
+
+Looks like the peace prize was helpful.
+
+Next we look at UNDP. 
+
+```{r, eval=TRUE}
+
+for (x in 1:length(UN_decisions$cleanedtext_l)) {
+  if(str_detect(UN_decisions$cleanedtext_l[x], "undp")){
+    undpbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "undp", before = 1, after  = 14)
+    if(str_detect(undpbudget[[x]], "reduseres")){
+      tmpred <- grab_text(text = undpbudget[[x]], target = "til", before = 0, after = 4)
+      tmp1 <- str_extract(tmpred, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
+      undpbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
+    }else{
+      
+      if(str_detect(undpbudget[[x]], "auka")){
+        tmpinc <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "undp", before = 1, after = 20)
+        tmpinc2 <- grab_text(text = tmpinc, target = "til", before = 0, after = 5)
+        tmpinc3 <- str_extract(tmpinc2, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
+        
+        undpbudgetn[[x]] <- (as.numeric(str_remove_all(tmpinc3, " ")))
+        
+      }else{
+        
+        tmp1 <- str_extract(undpbudget[[x]], "([:digit:]{1,3}\\s?)[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{3}")
+        
+        undpbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
+      }}
+  }else{next}
+}
+
+
+undpbudget_t <- do.call("rbind", undpbudgetn)
+
+undpbudget_f <- data.frame(Year = c(2022,2021,2020,2019,2018,2017,
+                                   2016,2015,2014,2013,2012,2011),
+                          UNDPMoney = undpbudget_t)
+
+ggplot(undpbudget_f, aes(x = Year, y = UNDPMoney)) + 
+  geom_point() + 
+  geom_line() + 
+  theme_bw() + 
+  labs(title = "UNDP grants by year", y = "NOK", x = "") + 
+  scale_x_continuous(breaks = c(2011, 2012, 2013, 2014, 2015, 2016,
+                                2017, 2018, 2019, 2020, 2021, 2022))
+
+```
+
+Looks like decreasing the budget is a popular thing. Maybe its not all mean old Støre that wants to reduce it. 
+
+Lets finally have a gander at UNAIDS grants for every year.
+
+```{r, eval=TRUE}
+
+for (x in 1:length(UN_decisions$cleanedtext_l)) {
+  if(str_detect(UN_decisions$cleanedtext_l[x], "unaids")){
+    unaidsbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "unaids", before = 1, after  = 14)
+    if(str_detect(unaidsbudget[[x]], "reduseres")){
+      tmpred <- grab_text(text = unaidsbudget[[x]], target = "til", before = 0, after = 4)
+      tmp1 <- str_extract(tmpred, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
+      unaidsbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
+    }else{
+      
+      if(str_detect(unaidsbudget[[x]], "auka")){
+        tmpinc <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "unaids", before = 1, after = 20)
+        tmpinc2 <- grab_text(text = tmpinc, target = "til", before = 0, after = 5)
+        tmpinc3 <- str_extract(tmpinc2, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
+        
+        unaidsbudgetn[[x]] <- (as.numeric(str_remove_all(tmpinc3, " ")))
+        
+      }else{
+        
+        tmp1 <- str_extract(unaidsbudget[[x]], "([:digit:]{1,3}\\s?)[:digit:]{1,3}\\s[:digit:]{1,3}\\s000")
+        
+        unaidsbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
+      }}
+  }else{next}
+}
+UN_decisions$decision_title
+unaidsbudget_t <- do.call("rbind", unaidsbudgetn)
+
+unaidsbudget_f <- data.frame(Year = c(2021,2020, 2019, 2018.5,2018,2017,
+                                    2016, 2015.5,2015,2014,2013,2012,2011),
+                           UNAIDSMoney = unaidsbudget_t)
+
+ggplot(unaidsbudget_f, aes(x = Year, y = UNAIDSMoney)) + 
+  geom_point() + 
+  geom_line() + 
+  theme_bw() + 
+  labs(title = "UNAIDS grants by year", y = "NOK", x = "") + 
+  scale_x_continuous(breaks = c(2011, 2012, 2013, 2014, 2015, 2016,
+                                2017, 2018, 2019, 2020, 2021, 2022))
+
+```
+
+Lots of supplementary budgets here. Weird that the negotiations in 2018 lead to a decrease. 
+
+Note that for all of these, Støres 2021 budget is coded as 2022, purely out of convenience. 
+
+Overall this provides a possibility of overviewing the budgets of the UN organizations, that are gathered in an automated manner. Although, given the detailed regex controls it is arguable whether it is truly "automatic", nonetheless it can be reused in the future to gather even more data simply by adding the session in the start of the code.
