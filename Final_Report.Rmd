@@ -47,6 +47,7 @@ library(haven)
 library(rvest)
 library(xml2)
 library(httr)
+library(reshape)
 
 
 safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", 
@@ -302,7 +303,7 @@ topic_assignment <- top_docs %>%
 ### the full data later
 
 topic_assignment <- topic_assignment %>%
-  rename(id = document)
+  dplyr::rename(id = document)
 
 ```
 
@@ -954,6 +955,121 @@ ggplot(top_docs100topic63, aes(x = gamma)) +
   geom_density() + 
   theme_bw() + 
   labs(title = "Density of Topic 63")
+
+```
+
+As a final point, since this way of looking at it doesnt account for mean values, I plot a heatmap of a correlation matrix of our topics, looking to see if there are any significant values that peak out in correlation.
+
+```{r, eval=TRUE}
+topic_assignment2 <- question_doc_prob_75 %>%
+  group_by(document) %>%
+  summarise(`1` = first(gamma),
+            `2` = nth(gamma, 2),
+            `3` = nth(gamma, 3),
+            `4` = nth(gamma, 4),
+            `5` = nth(gamma, 5),
+            `6` = nth(gamma, 6),
+            `7` = nth(gamma, 7),
+            `8` = nth(gamma, 8),
+            `9` = nth(gamma, 9),
+            `10` = nth(gamma, 10),
+            `11` = nth(gamma, 11),
+            `12` = nth(gamma, 12),
+            `13` = nth(gamma, 13),
+            `14` = nth(gamma, 13),
+            `15` = nth(gamma, 15),
+            `16` = nth(gamma, 16),
+            `17` = nth(gamma, 17),
+            `18` = nth(gamma, 18),
+            `19` = nth(gamma, 19),
+            `20` = nth(gamma, 20),
+            `21` = nth(gamma, 21),
+            `22` = nth(gamma, 22),
+            `23` = nth(gamma, 23),
+            `24` = nth(gamma, 24),
+            `25` = nth(gamma, 25),
+            `26` = nth(gamma, 26),
+            `27` = nth(gamma, 27),
+            `28` = nth(gamma, 28),
+            `29` = nth(gamma, 29),
+            `30` = nth(gamma, 30),
+            `31` = nth(gamma, 31),
+            `32` = nth(gamma, 32),
+            `33` = nth(gamma, 33),
+            `34` = nth(gamma, 34),
+            `35` = nth(gamma, 35),
+            `36` = nth(gamma, 36),
+            `37` = nth(gamma, 37),
+            `38` = nth(gamma, 38),
+            `39` = nth(gamma, 39),
+            `40` = nth(gamma, 40),
+            `41` = nth(gamma, 41),
+            `42` = nth(gamma, 42),
+            `43` = nth(gamma, 43),
+            `44` = nth(gamma, 44),
+            `45` = nth(gamma, 45),
+            `46` = nth(gamma, 46),
+            `47` = nth(gamma, 47),
+            `48` = nth(gamma, 48),
+            `49` = nth(gamma, 49),
+            `50` = nth(gamma, 50),
+            `51` = nth(gamma, 51),
+            `52` = nth(gamma, 52),
+            `53` = nth(gamma, 53),
+            `54` = nth(gamma, 54),
+            `55` = nth(gamma, 55),
+            `56` = nth(gamma, 56),
+            `57` = nth(gamma, 57),
+            `58` = nth(gamma, 58),
+            `59` = nth(gamma, 59),
+            `60` = nth(gamma, 60),
+            `61` = nth(gamma, 61),
+            `62` = nth(gamma, 62),
+            `63` = nth(gamma, 63),
+            `64` = nth(gamma, 64),
+            `65` = nth(gamma, 65),
+            `66` = nth(gamma, 66),
+            `67` = nth(gamma, 67),
+            `68` = nth(gamma, 68),
+            `69` = nth(gamma, 69),
+            `70` = nth(gamma, 70),
+            `71` = nth(gamma, 71),
+            `72` = nth(gamma, 72),
+            `73` = nth(gamma, 73),
+            `74` = nth(gamma, 74),
+            `75` = nth(gamma, 75))
+
+corframe <- topic_assignment2 %>% 
+  select(-(document))
+
+rouncor <- round(cor(corframe), 2)
+
+melted <- melt(rouncor)
+
+ggplot(melted, aes(x = X1, y = X2, fill = value)) + 
+  geom_tile() + 
+  theme_bw() + 
+  labs(title = "Correlation map between topic Gammas", x = "", 
+       y = "")
+```
+
+Looks surprisingly high-def, but ultimately sort of useless as is, we see some light spots though. Next step we make a heatmap of only those topics we are interested in.
+
+
+```{r, eval=TRUE}
+topic_assignment3 <- topic_assignment2 %>% 
+  select(`21`, `30`, `42`, `52`, `43`)
+
+rouncor2 <- round(cor(topic_assignment3), 2)
+
+melted2 <- melt(rouncor2)
+
+ggplot(melted2, aes(x = as.character(X1), y = as.character(X2), fill = value)) + 
+  geom_tile() + 
+  theme_bw() + 
+  labs(title = "Correlation map between topic Gammas", x = "", 
+       y = "")
+
 
 ```
 
