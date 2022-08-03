@@ -1592,13 +1592,13 @@ written_hearing_input <- written_hearing_input %>% as_tibble() %>%
 #let's save the dataset we have obtained before continuing
 #You can use getwd() to locate your current folder and create a path
 getwd()
-save(allsessionshearings, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/allsessionhearings.RData")
-save(hearinginput, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/hearinginput.RData")
-save(written_hearing_input, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/written_hearing_input.RData")
+save(allsessionshearings, file = "cleaned docs/allsessionhearings.RData")
+save(hearinginput, file = "cleaned docs/hearinginput.RData")
+save(written_hearing_input, file = "cleaned docs/written_hearing_input.RData")
 
-load(file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/allsessionhearings.RData")
-load(file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/hearinginput.RData")
-load(file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/written_hearing_input.RData")
+load(file = "cleaned docs/allsessionhearings.RData")
+load(file = "cleaned docs/hearinginput.RData")
+load(file = "cleaned docs/written_hearing_input.RData")
 #for now I will continue especially with the data from hearinginput, which has the hearing title and text to see where UNA is mentioned
 
 #loading relevant packages again
@@ -1745,7 +1745,7 @@ ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) +
   coord_cartesian(ylim = c(0,5))
 
 save(keyword_subset, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/keyword_subset.Rdata")
-load(file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/keyword_subset.Rdata")
+load(file = "cleaned docs/keyword_subset.Rdata")
 #further analysis
 ```
 
@@ -1783,7 +1783,7 @@ knitr::include_graphics("C:/Users/marku/Downloads/R.verson of table.jpg")
 View(Synonymordtabell)
 
 Under the “Eksempler på utfordringen med søkeord»-column in the dataset/table, some examples are highlighted that also applies to many of the other words in the table. 
-The challenge when searching for words is partly that there exists so many synonyms that are identical or similar in content. Different actors in politics in general incl. Stortinget may say or refer to the same (possibly issues related to FN-sambandet) in different ways.
+The challenge when searching for words is partly that there exists so many synonyms that are identical or similar in content. Different actors in politics in general incl. Stortinget may say or refer to the same (possibly issues related to FN-sambandet) in different ways. Also, related terms might seem tied to the UNAs work or interest, while in reality simply being catchy political terms without connection to the goal of this study.
 •	If I enter search word «utdanning for bærekraftig utvikling» I will get results where for is used, but not results where the politicians or people have used “utdanning om bærekraftig utvikling” or “utdanning i bærekraftig utvikling”
 -	Utdanning for bærekraftig utvikling
 -	Utdanning i bærekraftig utvikling
@@ -1802,7 +1802,7 @@ The challenge when searching for words is partly that there exists so many synon
 -	international labour organisation
 -	den internasjonale arbeidslivsorganisasjonen.   
 
-Will get different results in “antall treff” when varying these nuances in the search words 
+Will get different results in terms of mentions when varying these nuances in the search words 
 
 FYI: has recoded terms in R so that searches can be done only with small letters, hence no discussion of the variation of capital and small letters, which in some search settings and applications could be an issue 
 •	If not recoded R would treat search terms differently with and without capital letters. 
