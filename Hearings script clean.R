@@ -91,11 +91,22 @@ for(x in unique(allsessionshearings$hearing_id)){
   c[[x]] <- get_written_hearing_input(hearingid = x, good_manners = 0)
 }
 
+#place retrievend data in list c
+written_hearing_input <- do.call(rbind, c)
+
+#unnesting data
+written_hearing_input <- written_hearing_input %>% as_tibble() %>% 
+  unnest(cols = hearing_id, committee_id, hearing_input_organization, hearing_input_title, hearing_input_text)
+
 #let's save the dataset we have obtained before continuing
 getwd()
 save(allsessionshearings, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/allsessionhearings.RData")
 save(hearinginput, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/hearinginput.RData")
+save(written_hearing_input, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/written_hearing_input.RData")
 
+load(file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/allsessionhearings.RData")
+load(file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/hearinginput.RData")
+load(file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/written_hearing_input.RData")
 #for now I will continue especially with the data from hearinginput, which has the hearing title and text to see where UNA is mentioned
 
 #loading relevant packages again
@@ -106,12 +117,12 @@ hearingtext <- hearinginput %>%
   select(hearing_id, hearing_input_organization, committee_id, hearing_input_date, hearing_input_text, hearing_input_title) %>% 
   mutate(fulltext = paste(hearing_input_title, hearing_input_text))
 
-#now we can use the fulltext variable to check for FN sambandet and other keywords
+#Test: now we can use the fulltext variable to check for FN sambandet and other keywords
 mentionsFNS <- hearingtext %>% 
   filter(str_detect(fulltext, "FN-sambandet"))
 #we observe three mentions in hearings
 
-#but first we homogenize the text to make our search easier
+#In a more professional manner we first homogenize the text to make our search easier
 library(stringr)
 
 #changing all text to lower case and removing html patterns
@@ -123,7 +134,7 @@ hearingtext <- hearingtext %>%
   mutate(fulltext_lo = str_remove_all(fulltext_lo, pattern = "<.*>"), 
          fulltext_lo = str_replace_all(fulltext_lo, pattern =  "\\s*\\([^\\)]+\\\\", ""))
 
-#now checking for keywords
+#Test: we can now check for keywords
 sum(str_detect(hearingtext$fulltext_lo,"fn-sambandet"))
 #1 results 
 #we observe less mentions here, as only hearing text and title are searched (FN Sambandet as the hearing organisation is omitted)
@@ -195,18 +206,15 @@ keyword_subset <- keywordmentions %>%
            str_detect(fulltext_lo, " unicef "))
   
 #now we create a full subset called "subfullset" in which we include hearing ids beside the keyword_subset variables
-?left_join
-keyword_subset <- left_join(keyword_subset, subfullset, by = c("hearing_id"))
-
 #changing the full subset to contain hearing ids and session ids selected from allsessionhearings dataset
+?left_join
 subfullset <- allsessionshearings %>% 
   select(hearing_id, session_id)
 
-#now we are combining datasets containing both hearing id and session id 
-newkeywordmentions <- left_join(keywordmentions, subfullset, by = c("hearing_id"))
-keywordmentions <- left_join(allsessionshearings, sess , by = c("session_id")) #can delete this maybe?
+#now we join the full subset together with the keyword_subset
+keyword_subset <- left_join(keyword_subset, subfullset, by = c("hearing_id"))
 
-#why do we use the table here?
+#this table is just to 
 table(allsessionshearings$session_id)
 
 
@@ -228,7 +236,7 @@ safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77",
 #plotting only the relevant keyword mentions after priority
 ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) + 
   geom_bar(position = position_dodge(width = 0.8)) +
-  scale_fill_brewer(palette = "safe_colorblind_palette") +
+  scale_fill_brewer(palette = "Paired") +
   labs(title = "Keyword Mentions in Hearings",
        x = "Storting Sessions",
        y = "Number of Mentions",
@@ -240,7 +248,7 @@ ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) +
   theme(legend.position = "right", legend.fill = "Priority Level",
         plot.caption.position = "plot") +
   theme_light() +
-  coord_cartesian(ylim = c(0,150))
+  coord_cartesian(ylim = c(0,10))
 
 
  
