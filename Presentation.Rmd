@@ -1,5 +1,5 @@
 ---
-title: "Presentation, Case FN-sambandet"
+title: "Project presentation: FN-sambandet"
 author: "Group 3"
 date: "ISSSV1337"
 output: ioslides_presentation
@@ -10,33 +10,96 @@ output: ioslides_presentation
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = FALSE, message = FALSE)
 library(tidyverse)
 ```
+
+
+## Case description 
+- Focus area: Measure impact to or in Stortinget 
+- Text analysis and topic modeling
+
+ 
+```{r, out.width="25%", fig.align="right", echo = FALSE}
+#knitr::include_graphics("../../Users/eier/Lefdal Cloud/ISSS13372/last ned.jpg")
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/last_ned.jpg", error = FALSE) 
+
 ```
 
 
 
-## Contents 
-### Introduction
-- Case description 
-
-### Methods 
-- Stortingscrape
-- Choice of keywords -> problems 
-
-### Problems
-
-### Results
-
-### Social media
-- How to do it yourself 
-
-### Policy implications
+## Methods
+- **Stortingscrape** A R-package developed by Martin Søyland, Use to retive date from stortingets open data source 
+- Text analysis and topic modeling
+- Key word searches, word counts
+- **1. Hearings**
+- **2. Sessions**
+- **3. Questions**
 
 
 
-## Key words 
+## Stortingscrape
 
-- Application
-- Priority list 
+```{r, eval=FALSE}
+sessions_storting <- get_parlsessions()
 
+sessions_storting <- sessions_storting %>%
+  filter(id %in% c("2011-2012", "2012-2013", "2013-2014",
+                   "2014-2015", "2015-2016", "2016-2017",
+                   "2017-2018", "2018-2019", "2019-2020", 
+                   "2020-2021", "2021-2022"))
 
+a<-list()
+b<-list()
+c<-list()
+
+for(x in unique(sessions_storting$id)){
+  a[[x]] <- get_session_questions(sessionid = x, q_type = "interpellasjoner", status = NA, good_manners = 0)
+  b[[x]] <- get_session_questions(sessionid = x, q_type = "sporretimesporsmal", status = NA, good_manners = 0)
+  c[[x]] <- get_session_questions(sessionid = x, q_type = "skriftligesporsmal", status = NA, good_manners = 0)
   
+  
+```
+
+## Stortingscrape II
+- API challanges
+- Limitations of our product
+
+
+## Results
+
+
+## 1. Hearings
+
+```{r, out.width="90%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/hearing_plot_mentions.jpeg", error = FALSE) 
+```
+
+## Findings
+- Only one mention of FN-Sambandet in hearings
+- No mentions related to SDG 4.7 and terms related to sustainable education
+- 9 mentions of UN organization since 2019 (causal relationships)
+
+## Challenges hearings
+- Few observations
+- data availability before 2019-2020 parliament session
+
+## 2. Sessions
+
+## 3. Questions
+
+## Challenges
+**Key words**
+
+## Social media
+- Due to lack of personal accsess it has not been possible to scrape Facebook and instagram 
+- How to extract metadata from Facebook, Instagram and Twitter 
+- 
+
+## Policy recommendations
+- Increase visability on social media and in parliament 
+- Create a coherent communication strategy and use keywords consistently
+- Issue-linking priority 1-> priority 2-> priority 3
+- Self reporting enables analysis of prefermance-> tailor further startegy and improve targeting 
+
+
+
+
+
