@@ -1501,10 +1501,12 @@ library(tidyr)
 #library in the stortingpackage
 library(stortingscrape)
 
+```{r, eval=false}
 #there are three relevant functions for hearings. With the questionmark we learn more about them
 ?get_session_hearings()
 ?get_hearing_input()
 ?get_written_hearing_input()
+```
 
 #before running one of these functions, we want to get all parliament sessions and specify that we only scrape from 2011 onwards
 #therefore we create an object for the sessions and get all parliament sessions
