@@ -248,7 +248,7 @@ ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) +
   theme(legend.position = "right", legend.fill = "Priority Level",
         plot.caption.position = "plot") +
   theme_light() +
-  coord_cartesian(ylim = c(0,10))
+  coord_cartesian(ylim = c(0,5))
 
 
  
