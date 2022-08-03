@@ -9,15 +9,17 @@ output: ioslides_presentation
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = FALSE, message = FALSE)
 library(tidyverse)
+
 ```
 
+## Contents
+1. Case description
+2. Methods and Limitations
+3. Findings
+4. Social Media
+5. Policy recommendations
 
-## Case description 
-- Focus area: Measure impact to or in Stortinget 
-- Text analysis and topic modeling
-
- 
-```{r, out.width="25%", fig.align="right", echo = FALSE}
+```{r, out.width="65%", fig.align="right", echo = FALSE}
 #knitr::include_graphics("../../Users/eier/Lefdal Cloud/ISSS13372/last ned.jpg")
 knitr::include_graphics("~/Lefdal Cloud/ISSS13372/last_ned.jpg", error = FALSE) 
 
@@ -25,17 +27,24 @@ knitr::include_graphics("~/Lefdal Cloud/ISSS13372/last_ned.jpg", error = FALSE)
 
 
 
-## Methods
-- **Stortingscrape** A R-package developed by Martin Søyland, Use to retive date from stortingets open data source 
+## 1. Case description 
+
+
+
+## 2. Methods
+- **Stortingscrape** A R-package developed by Martin Søyland, Use to retrieve date from stortingets open data source 
 - Text analysis and topic modeling
 - Key word searches, word counts
-- **1. Hearings**
-- **2. Sessions**
-- **3. Questions**
+- **I. Questions**
+- **II. Decisions**
+- **III. Hearings**
+- **IV. Budget**
+
+- **V. Social Media impact**
 
 
 
-## Stortingscrape
+## 3. Stortingscrape 
 
 ```{r, eval=FALSE}
 sessions_storting <- get_parlsessions()
@@ -45,59 +54,387 @@ sessions_storting <- sessions_storting %>%
                    "2014-2015", "2015-2016", "2016-2017",
                    "2017-2018", "2018-2019", "2019-2020", 
                    "2020-2021", "2021-2022"))
-
 a<-list()
 b<-list()
 c<-list()
 
 for(x in unique(sessions_storting$id)){
-  a[[x]] <- get_session_questions(sessionid = x, q_type = "interpellasjoner", status = NA, good_manners = 0)
-  b[[x]] <- get_session_questions(sessionid = x, q_type = "sporretimesporsmal", status = NA, good_manners = 0)
-  c[[x]] <- get_session_questions(sessionid = x, q_type = "skriftligesporsmal", status = NA, good_manners = 0)
-  
-  
+  a[[x]] <- get_session_questions(sessionid = x, q_type = "interpellasjoner", 
+                                  status = NA, good_manners = 0)
+  b[[x]] <- get_session_questions(sessionid = x, q_type = "sporretimesporsmal", 
+                                  status = NA, good_manners = 0)
+  c[[x]] <- get_session_questions(sessionid = x, q_type = "skriftligesporsmal", 
+                                  status = NA, good_manners = 0)} 
+
 ```
 
-## Stortingscrape II
-- API challanges
-- Limitations of our product
+
+## Operationalization
+- Choice of keywords 
+
+```{r,out.width="90%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/Excel_I.jpeg", error = FALSE)
+
+```
 
 
-## Results
+
+## I. Questions
+
+**Question analysis**
+ - as you may or may not know, mps ask questions
+ - these questions provide a possiblity to hold the government accountable
+ - Or to promote ones own policy agenda
+
+**A quick look at the data**
+ - We have in our particular period, 27 792 questions asked. 
+ - With such a large amount of questions we should expect exciting results.
+ 
+ 
+ 
+```{r,out.width="60%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/Q1.png", error = FALSE)
+
+```
 
 
-## 1. Hearings
+##
+
+```{r,out.width="60%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/1_1.png", error = FALSE)
+```
+
+```{r,out.width="60%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/1_2.png", error = FALSE)
+```
+
+## What do we see here?
+- People are suddenly talking a lot about UN related orgs and stuff.
+- I think we all have a clue about it being somewhat related to Ukraine. 
+- Unsurprisingly it seems people are using the UN organisations to talk about the big current event.
+
+## What more can we do here?
+- The size of our corpus lends itself to being applied to Structural Topic Modeling (STM)
+- An stm is a form of unsupervised machine learning, based on grouping documents after shared characteristics. 
+- We can use this to create an overview over what kind of topics the questions that mention UNA or sustainable development are about.
+- We tokenize, stem and create a dfm over the entire documents.
+
+## How do we apply this model?
+- We will primarily take two angels to this.
+- Second, we will look at documents that charge highly on certain topics, and see how they charge on other topics.
+- All the documents get a gamma for each topic, which is a measure of how likely it is that the document belongs to that topic.
+- These gammas form the backbone of this strategy.
+
+ 
+## What are the results of the topic assignment to our central documents?
+
+
+```{r, ,out.width="80%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/4.png", error = FALSE)
+
+```
+
+## 
+
+```{r,,out.width="80%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/5_1.png", error = FALSE)
+
+```
+
+##
+
+```{r,,out.width="80%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/5_2.png", error = FALSE)
+
+```
+
+
+
+##
+
+
+```{r,,out.width="50%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/9_1.png", error = FALSE)
+```
+
+
+```{r,out.width="50%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/9_2.png", error = FALSE)
+```
+
+##
+
+```{r, out.width="60%", fig.align="left", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/13_1.png", error = FALSE)
+```
+
+```{r, out.width="60%", fig.align="right", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/13_2.png", error = FALSE)
+```
+
+
+## Findings
+
+ -  Sustainability and education is not readily shared with each other
+ -  It is mentioned more in regards to university level education
+ -  Low focus on "høyskoler" and on elementary schools.
+ -  The crossections of gammas on sustainability and education, work as a measure of UBU knowledge.
+ -  In the future this code, or modified versions of it, can be run on future sessions, to isolate the degree to which these topics intersect in the future. 
+
+
+
+## II.Decisions
+
+```{r, eval=FALSE}
+decisionslista <- do.call("rbind", a)
+
+sum(str_detect(decisionslista$decision_text, "FN-sambandet")) 
+# 0 mentions of the spesific string FN-sambandet
+
+sum(str_detect(decisionslista$decision_text, "4,7"))
+# 19 mentions of 4,7 
+
+sum(str_detect(decisionslista$decision_text, "utdanning for bærekraftig utvikling"))
+# 0 mentions of education for sustainable development
+
+sum(str_detect(decisionslista$decision_text, "utdanning"))
+# 291 mentions of education
+
+sum(str_detect(decisionslista$decision_text, "bærekraftig"))
+# 82 mentions of sustainable
+```
+
+##
+
+```{r, eval=FALSE}
+toppingtopicswords_top1 <- decisiontopics_group %>% 
+  filter(topic %in% c(2,32,33))
+
+
+
+toppingtopicswords_top1 %>%
+  ggplot(aes(term, beta, fill = topic)) + 
+  geom_bar(stat = "identity") + 
+  facet_wrap( ~ topic, 
+              ncol = 3, 
+              scales = "free") + 
+  labs(x = "", y = "Word-Topic probability") + 
+  theme_bw() + 
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+##
+
+```{r, out.width="90%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/Bilde_tia.png", error = FALSE)
+
+```
+
+## III. Hearings
+- Prio 1, Prio 2, Prio 3. 
+- Only one mention of FN-Sambandet in hearings
+- No mentions related to SDG 4.7 and terms related to sustainable education
+- 9 mentions of UN organization since 2019 (causal relationships)
+
+##
 
 ```{r, out.width="90%", fig.align="center", echo = FALSE}
 knitr::include_graphics("~/Lefdal Cloud/ISSS13372/hearing_plot_mentions.jpeg", error = FALSE) 
 ```
 
-## Findings
-- Only one mention of FN-Sambandet in hearings
-- No mentions related to SDG 4.7 and terms related to sustainable education
-- 9 mentions of UN organization since 2019 (causal relationships)
 
 ## Challenges hearings
 - Few observations
-- data availability before 2019-2020 parliament session
+- Data availability before 2019-2020 parliament session
 
-## 2. Sessions
 
-## 3. Questions
+## Budget Analysis
+ -  The adventure into the decisions gave some specific results
+ -  We found that there were mostly budgets.
+ -  This meant we could find a way to automate the retrieval of those budgets
+ -  or did it...?
+ -  Lessons learned
 
-## Challenges
-**Key words**
+## Adventures in REGEX
 
-## Social media
-- Due to lack of personal accsess it has not been possible to scrape Facebook and instagram 
-- How to extract metadata from Facebook, Instagram and Twitter 
-- 
+```{r, eval=FALSE}
 
-## Policy recommendations
-- Increase visability on social media and in parliament 
+grab_text <- function(text, target, before, after){
+  min <- which(unlist(map(str_split(text, "\\s"), ~grepl(target, .x))))-before
+  max <- which(unlist(map(str_split(text, "\\s"), ~grepl(target, .x))))+after
+  
+  paste(str_split(text, "\\s")[[1]][min:max], collapse = " ")
+}
+
+undpbudget <- list()
+undpbudgetn <- list()
+```
+
+
+
+```{r, eval=FALSE}
+for (x in 1:length(UN_decisions$cleanedtext_l)) {
+  if(str_detect(UN_decisions$cleanedtext_l[x], "undp")){
+    undpbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "undp", before = 1, after  = 14)
+    if(str_detect(undpbudget[[x]], "reduseres")){
+      tmpred <- grab_text(text = undpbudget[[x]], target = "til", before = 0, after = 4)
+      tmp1 <- str_extract(tmpred, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
+      undpbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
+    }else{
+      
+      if(str_detect(undpbudget[[x]], "auka")){
+        tmpinc <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "undp", before = 1, after = 20)
+        tmpinc2 <- grab_text(text = tmpinc, target = "til", before = 0, after = 5)
+        tmpinc3 <- str_extract(tmpinc2, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
+        
+        undpbudgetn[[x]] <- (as.numeric(str_remove_all(tmpinc3, " ")))
+        
+      }else{
+        
+        tmp1 <- str_extract(undpbudget[[x]], "([:digit:]{1,3}\\s?)[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{3}")
+        
+        undpbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
+      }}
+  }else{next}
+}
+```
+
+- All of this to retrieve 15 lines of information
+- And that is how you turn a 15 minute task, into a 3-day project 
+-  **automation**
+
+## 
+
+**Regardless of how it was retrieved, here are the results**
+
+```{r, out.width="65%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/12_1.png", error = FALSE)
+
+```
+
+
+```{r, out.width="65%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/12_2.png", error = FALSE)
+
+```
+
+
+```{r,out.width="70%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/12_3.png", error = FALSE)
+
+```
+
+```{r, out.width="90%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/12_4.png", error = FALSE)
+
+```
+
+
+##Conluding remarks
+ - There seems to be a consistent trend of reducing budgets
+ - Im sure none of this is a surprise to our mission provider
+ - But now it has been done *automatically* 
+
+
+## 4. Social media 
+- Due to lack of administrative access we have not been able to scrape FN-sambandets Facebook and instagram profiles 
+
+## How to extract data from Facebook and Instagram
+
+```{r, eval=FALSE}
+FNS <- getUserMedia(username = "fnsambandet",
+                    token = TokenInsta) 
+
+comments <- getComments(FNS$id[Cgv3mNjqhvk], 
+            token = TokenInsta, 
+            verbose = TRUE)
+```
+
+
+## Twitter I 
+
+```{r, eval=FALSE}
+store api keys (replace with your own - these are fake examples)
+api_key <- "000"
+api_secret_key <- "ABC"
+
+
+access_token <- "123abc"
+access_token_secret <- "dddd"
+
+# authenticate
+token <- create_token(
+  app = "thename",
+  consumer_key = api_key,
+  consumer_secret = api_secret_key,
+  access_token = access_token,
+  access_secret = access_token_secret)
+```
+
+## Twitter II
+
+```{r, eval=FALSE}
+Using search_tweets to find all tweets related to the string FNsambandet
+We see that there are 9 tweets related to the string FNsambandet
+
+#Search tweets related to FNsambandet
+twts_fnsambandet <- search_tweets("FNsambandet", n = 1000)
+
+
+# Create a table of the different tweets
+sc_twts <- data.frame(twts_fnsambandet$full_text)
+sc_twts
+
+
+Here I try to search for tweets that use the hashtag #FNsambandet, 
+however it returns a dataset of 0 obs, which means there are no one who uses the hashtag on Twitter
+
+twts_hashtag <- search_tweets("#FNsambandet", 
+                           n = 2000)
+
+
+
+# Searching for the strings "utdanning for bærekratig utvikling" and "ubu", which is part of
+FN's Sustainable Development Goal 4, Quality Education, an important part of FN-Sambandet's work.
+
+#Search tweets related to FN goal 4,7
+tweets_ubu <- search_tweets("utdanning for bærekraftig utvikling", n = 10000)
+
+
+#Search tweets related to sdg4,7
+tweets_sdg <- search_tweets("sdg4,7", n = 1000, lang= "en")
+
+sc_sdg <- table(tweets_sdg$full_text)
+sc_sdg
+
+```
+
+## Twitter III
+
+```{r, out.width="90%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/Twitter.png", error = FALSE)
+
+```
+
+
+
+
+## 5. Policy recommendations
+- Increase visibility on social media and in parliament 
 - Create a coherent communication strategy and use keywords consistently
-- Issue-linking priority 1-> priority 2-> priority 3
-- Self reporting enables analysis of prefermance-> tailor further startegy and improve targeting 
+- **Issue-linking** priority 1-> priority 2-> priority 3
+- Self reporting enables analysis of performance -> tailor further startegy and improve targeting 
+
+## Choice of keywords
+
+```{r, out.width="80%", fig.align="center", echo = FALSE}
+knitr::include_graphics("~/Lefdal Cloud/ISSS13372/Excel_I.jpeg", error = FALSE)
+
+```
+
+
+## Thanks for your attention and the amazing summer
 
 
 
