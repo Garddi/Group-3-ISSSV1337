@@ -586,89 +586,89 @@ textrelevancewparty <- textrelevancewparty %>%
                     party_id == "FrP" & session_id == "2020-2021" ~ "Confidence and Supply",
                     party_id == "KrF" & session_id == "2020-2021" ~ "Government",
                     party_id == "MDG" & session_id == "2020-2021" ~ "Opposition",
-                                 party_id == "R" & session_id == "2020-2021" ~ "Opposition",
-                                 party_id == "V" & session_id == "2020-2021" ~ "Government",
-                                 party_id == "A" & session_id == "2019-2020" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2019-2020" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2019-2020" ~ "Opposition",
-                                 party_id == "H" & session_id == "2019-2020" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2019-2020" ~ "Confidence and Supply",
-                                 party_id == "KrF" & session_id == "2019-2020" ~ "Government",
-                                 party_id == "MDG" & session_id == "2019-2020" ~ "Opposition",
-                                 party_id == "R" & session_id == "2019-2020" ~ "Opposition",
-                                 party_id == "V" & session_id == "2019-2020" ~ "Government",
-                                 party_id == "A" & session_id == "2018-2019" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2018-2019" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2018-2019" ~ "Opposition",
-                                 party_id == "H" & session_id == "2018-2019" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2018-2019" ~ "Government",
-                                 party_id == "KrF" & session_id == "2018-2019" ~ "Government",
-                                 party_id == "MDG" & session_id == "2018-2019" ~ "Opposition",
-                                 party_id == "R" & session_id == "2018-2019" ~ "Opposition",
-                                 party_id == "V" & session_id == "2018-2019" ~ "Government",
-                                 party_id == "A" & session_id == "2017-2018" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2017-2018" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2017-2018" ~ "Opposition",
-                                 party_id == "H" & session_id == "2017-2018" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2017-2018" ~ "Government",
-                                 party_id == "KrF" & session_id == "2017-2018" ~ "Confidence and Supply",
-                                 party_id == "MDG" & session_id == "2017-2018" ~ "Opposition",
-                                 party_id == "R" & session_id == "2017-2018" ~ "Opposition",
-                                 party_id == "V" & session_id == "2017-2018" ~ "Government",
-                                 party_id == "A" & session_id == "2016-2017" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2016-2017" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2016-2017" ~ "Opposition",
-                                 party_id == "H" & session_id == "2016-2017" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2016-2017" ~ "Government",
-                                 party_id == "KrF" & session_id == "2016-2017" ~ "Confidence and Supply",
-                                 party_id == "MDG" & session_id == "2016-2017" ~ "Opposition",
-                                 party_id == "R" & session_id == "2016-2017" ~ "Opposition",
-                                 party_id == "V" & session_id == "2016-2017" ~ "Confidence and Supply",
-                                 party_id == "A" & session_id == "2015-2016" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2015-2016" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2015-2016" ~ "Opposition",
-                                 party_id == "H" & session_id == "2015-2016" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2015-2016" ~ "Government",
-                                 party_id == "KrF" & session_id == "2015-2016" ~ "Confidence and Supply",
-                                 party_id == "MDG" & session_id == "2015-2016" ~ "Opposition",
-                                 party_id == "R" & session_id == "2015-2016" ~ "Opposition",
-                                 party_id == "V" & session_id == "2015-2016" ~ "Confidence and Supply",
-                                 party_id == "A" & session_id == "2014-2015" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2014-2015" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2014-2015" ~ "Opposition",
-                                 party_id == "H" & session_id == "2014-2015" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2014-2015" ~ "Government",
-                                 party_id == "KrF" & session_id == "2014-2015" ~ "Confidence and Supply",
-                                 party_id == "MDG" & session_id == "2014-2015" ~ "Opposition",
-                                 party_id == "R" & session_id == "2014-2015" ~ "Opposition",
-                                 party_id == "V" & session_id == "2014-2015" ~ "Confidence and Supply",
-                                 party_id == "A" & session_id == "2013-2014" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2013-2014" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2013-2014" ~ "Opposition",
-                                 party_id == "H" & session_id == "2013-2014" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2013-2014" ~ "Government",
-                                 party_id == "KrF" & session_id == "2013-2014" ~ "Confidence and Supply",
-                                 party_id == "MDG" & session_id == "2013-2014" ~ "Opposition",
-                                 party_id == "R" & session_id == "2013-2014" ~ "Opposition",
-                                 party_id == "V" & session_id == "2013-2014" ~ "Confidence and Supply",
-                                 party_id == "A" & session_id == "2012-2013" ~ "Government",
-                                 party_id == "Sp" & session_id == "2012-2013" ~ "Government",
-                                 party_id == "SV" & session_id == "2012-2013" ~ "Government",
-                                 party_id == "H" & session_id == "2012-2013" ~ "Opposition", 
-                                 party_id == "FrP" & session_id == "2012-2013" ~ "Opposition",
-                                 party_id == "KrF" & session_id == "2012-2013" ~ "Opposition",
-                                 party_id == "MDG" & session_id == "2012-2013" ~ "Opposition",
-                                 party_id == "R" & session_id == "2012-2013" ~ "Opposition",
-                                 party_id == "V" & session_id == "2012-2013" ~ "Opposition",
-                                 party_id == "A" & session_id == "2011-2012" ~ "Government",
-                                 party_id == "Sp" & session_id == "2011-2012" ~ "Government",
-                                 party_id == "SV" & session_id == "2011-2012" ~ "Government",
-                                 party_id == "H" & session_id == "2011-2012" ~ "Opposition", 
-                                 party_id == "FrP" & session_id == "2011-2012" ~ "Opposition",
-                                 party_id == "KrF" & session_id == "2011-2012" ~ "Opposition",
-                                 party_id == "MDG" & session_id == "2011-2012" ~ "Opposition",
-                                 party_id == "R" & session_id == "2011-2012" ~ "Opposition",
-                                 party_id == "V" & session_id == "2011-2012" ~ "Opposition"
+                    party_id == "R" & session_id == "2020-2021" ~ "Opposition",
+                    party_id == "V" & session_id == "2020-2021" ~ "Government",
+                    party_id == "A" & session_id == "2019-2020" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2019-2020" ~ "Opposition",
+                    party_id == "SV" & session_id == "2019-2020" ~ "Opposition",
+                    party_id == "H" & session_id == "2019-2020" ~ "Government", 
+                    party_id == "FrP" & session_id == "2019-2020" ~ "Confidence and Supply",
+                    party_id == "KrF" & session_id == "2019-2020" ~ "Government",
+                    party_id == "MDG" & session_id == "2019-2020" ~ "Opposition",
+                    party_id == "R" & session_id == "2019-2020" ~ "Opposition",
+                    party_id == "V" & session_id == "2019-2020" ~ "Government",
+                    party_id == "A" & session_id == "2018-2019" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2018-2019" ~ "Opposition",
+                    party_id == "SV" & session_id == "2018-2019" ~ "Opposition",
+                    party_id == "H" & session_id == "2018-2019" ~ "Government", 
+                    party_id == "FrP" & session_id == "2018-2019" ~ "Government",
+                    party_id == "KrF" & session_id == "2018-2019" ~ "Government",
+                    party_id == "MDG" & session_id == "2018-2019" ~ "Opposition",
+                    party_id == "R" & session_id == "2018-2019" ~ "Opposition",
+                    party_id == "V" & session_id == "2018-2019" ~ "Government",
+                    party_id == "A" & session_id == "2017-2018" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2017-2018" ~ "Opposition",
+                    party_id == "SV" & session_id == "2017-2018" ~ "Opposition",
+                    party_id == "H" & session_id == "2017-2018" ~ "Government", 
+                    party_id == "FrP" & session_id == "2017-2018" ~ "Government",
+                    party_id == "KrF" & session_id == "2017-2018" ~ "Confidence and Supply",
+                    party_id == "MDG" & session_id == "2017-2018" ~ "Opposition",
+                    party_id == "R" & session_id == "2017-2018" ~ "Opposition",
+                    party_id == "V" & session_id == "2017-2018" ~ "Government",
+                    party_id == "A" & session_id == "2016-2017" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2016-2017" ~ "Opposition",
+                    party_id == "SV" & session_id == "2016-2017" ~ "Opposition",
+                    party_id == "H" & session_id == "2016-2017" ~ "Government", 
+                    party_id == "FrP" & session_id == "2016-2017" ~ "Government",
+                    party_id == "KrF" & session_id == "2016-2017" ~ "Confidence and Supply",
+                    party_id == "MDG" & session_id == "2016-2017" ~ "Opposition",
+                    party_id == "R" & session_id == "2016-2017" ~ "Opposition",
+                    party_id == "V" & session_id == "2016-2017" ~ "Confidence and Supply",
+                    party_id == "A" & session_id == "2015-2016" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2015-2016" ~ "Opposition",
+                    party_id == "SV" & session_id == "2015-2016" ~ "Opposition",
+                    party_id == "H" & session_id == "2015-2016" ~ "Government", 
+                    party_id == "FrP" & session_id == "2015-2016" ~ "Government",
+                    party_id == "KrF" & session_id == "2015-2016" ~ "Confidence and Supply",
+                    party_id == "MDG" & session_id == "2015-2016" ~ "Opposition",
+                    party_id == "R" & session_id == "2015-2016" ~ "Opposition",
+                    party_id == "V" & session_id == "2015-2016" ~ "Confidence and Supply",
+                    party_id == "A" & session_id == "2014-2015" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2014-2015" ~ "Opposition",
+                    party_id == "SV" & session_id == "2014-2015" ~ "Opposition",
+                    party_id == "H" & session_id == "2014-2015" ~ "Government", 
+                    party_id == "FrP" & session_id == "2014-2015" ~ "Government",
+                    party_id == "KrF" & session_id == "2014-2015" ~ "Confidence and Supply",
+                    party_id == "MDG" & session_id == "2014-2015" ~ "Opposition",
+                    party_id == "R" & session_id == "2014-2015" ~ "Opposition",
+                    party_id == "V" & session_id == "2014-2015" ~ "Confidence and Supply",
+                    party_id == "A" & session_id == "2013-2014" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2013-2014" ~ "Opposition",
+                    party_id == "SV" & session_id == "2013-2014" ~ "Opposition",
+                    party_id == "H" & session_id == "2013-2014" ~ "Government", 
+                    party_id == "FrP" & session_id == "2013-2014" ~ "Government",
+                    party_id == "KrF" & session_id == "2013-2014" ~ "Confidence and Supply",
+                    party_id == "MDG" & session_id == "2013-2014" ~ "Opposition",
+                    party_id == "R" & session_id == "2013-2014" ~ "Opposition",
+                    party_id == "V" & session_id == "2013-2014" ~ "Confidence and Supply",
+                    party_id == "A" & session_id == "2012-2013" ~ "Government",
+                    party_id == "Sp" & session_id == "2012-2013" ~ "Government",
+                    party_id == "SV" & session_id == "2012-2013" ~ "Government",
+                    party_id == "H" & session_id == "2012-2013" ~ "Opposition", 
+                    party_id == "FrP" & session_id == "2012-2013" ~ "Opposition",
+                    party_id == "KrF" & session_id == "2012-2013" ~ "Opposition",
+                    party_id == "MDG" & session_id == "2012-2013" ~ "Opposition",
+                    party_id == "R" & session_id == "2012-2013" ~ "Opposition",
+                    party_id == "V" & session_id == "2012-2013" ~ "Opposition",
+                    party_id == "A" & session_id == "2011-2012" ~ "Government",
+                    party_id == "Sp" & session_id == "2011-2012" ~ "Government",
+                    party_id == "SV" & session_id == "2011-2012" ~ "Government",
+                    party_id == "H" & session_id == "2011-2012" ~ "Opposition", 
+                    party_id == "FrP" & session_id == "2011-2012" ~ "Opposition",
+                    party_id == "KrF" & session_id == "2011-2012" ~ "Opposition",
+                    party_id == "MDG" & session_id == "2011-2012" ~ "Opposition",
+                    party_id == "R" & session_id == "2011-2012" ~ "Opposition",
+                    party_id == "V" & session_id == "2011-2012" ~ "Opposition"
 ))
 
 ```
@@ -688,7 +688,8 @@ ggplot(textrelevancewparty, aes(x = session_id, fill = party_id)) +
 
 ggplot(textrelevancewparty, aes(x = session_id, fill = gender)) + 
   geom_bar() + 
-  scale_fill_viridis(discrete = TRUE)
+  scale_fill_viridis(discrete = TRUE) + 
+  theme_bw()
 
 ggplot(textrelevancewparty, aes(x = session_id, fill = govposition)) + 
   geom_bar() + 
@@ -723,105 +724,105 @@ questiontextwparty <- left_join(questiontext2, allmpsparties,
 
 questiontextwparty <- questiontextwparty %>% 
   mutate(govposition = case_when(party_id == "A" & session_id == "2021-2022" ~ "Government",
-                                 party_id == "Sp" & session_id == "2021-2022" ~ "Government",
-                                 party_id == "SV" & session_id == "2021-2022" ~ "Supply and Confidence",
-                                 party_id == "H" & session_id == "2021-2022" ~ "Opposition",
-                                 party_id == "FrP" & session_id == "2021-2022" ~ "Opposition",
-                                 party_id == "KrF" & session_id == "2021-2022" ~ "Opposition",
-                                 party_id == "MDG" & session_id == "2021-2022" ~ "Opposition",
-                                 party_id == "R" & session_id == "2021-2022" ~ "Opposition",
-                                 party_id == "V" & session_id == "2021-2022" ~ "Opposition",
-                                 party_id == "A" & session_id == "2020-2021" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2020-2021" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2020-2021" ~ "Opposition",
-                                 party_id == "H" & session_id == "2020-2021" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2020-2021" ~ "Supply and Confidence",
-                                 party_id == "KrF" & session_id == "2020-2021" ~ "Government",
-                                 party_id == "MDG" & session_id == "2020-2021" ~ "Opposition",
-                                 party_id == "R" & session_id == "2020-2021" ~ "Opposition",
-                                 party_id == "V" & session_id == "2020-2021" ~ "Government",
-                                 party_id == "A" & session_id == "2019-2020" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2019-2020" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2019-2020" ~ "Opposition",
-                                 party_id == "H" & session_id == "2019-2020" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2019-2020" ~ "Supply and Confidence",
-                                 party_id == "KrF" & session_id == "2019-2020" ~ "Government",
-                                 party_id == "MDG" & session_id == "2019-2020" ~ "Opposition",
-                                 party_id == "R" & session_id == "2019-2020" ~ "Opposition",
-                                 party_id == "V" & session_id == "2019-2020" ~ "Government",
-                                 party_id == "A" & session_id == "2018-2019" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2018-2019" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2018-2019" ~ "Opposition",
-                                 party_id == "H" & session_id == "2018-2019" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2018-2019" ~ "Government",
-                                 party_id == "KrF" & session_id == "2018-2019" ~ "Government",
-                                 party_id == "MDG" & session_id == "2018-2019" ~ "Opposition",
-                                 party_id == "R" & session_id == "2018-2019" ~ "Opposition",
-                                 party_id == "V" & session_id == "2018-2019" ~ "Government",
-                                 party_id == "A" & session_id == "2017-2018" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2017-2018" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2017-2018" ~ "Opposition",
-                                 party_id == "H" & session_id == "2017-2018" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2017-2018" ~ "Government",
-                                 party_id == "KrF" & session_id == "2017-2018" ~ "Supply and Confidence",
-                                 party_id == "MDG" & session_id == "2017-2018" ~ "Opposition",
-                                 party_id == "R" & session_id == "2017-2018" ~ "Opposition",
-                                 party_id == "V" & session_id == "2017-2018" ~ "Government",
-                                 party_id == "A" & session_id == "2016-2017" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2016-2017" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2016-2017" ~ "Opposition",
-                                 party_id == "H" & session_id == "2016-2017" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2016-2017" ~ "Government",
-                                 party_id == "KrF" & session_id == "2016-2017" ~ "Supply and Confidence",
-                                 party_id == "MDG" & session_id == "2016-2017" ~ "Opposition",
-                                 party_id == "R" & session_id == "2016-2017" ~ "Opposition",
-                                 party_id == "V" & session_id == "2016-2017" ~ "Supply and Confidence",
-                                 party_id == "A" & session_id == "2015-2016" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2015-2016" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2015-2016" ~ "Opposition",
-                                 party_id == "H" & session_id == "2015-2016" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2015-2016" ~ "Government",
-                                 party_id == "KrF" & session_id == "2015-2016" ~ "Supply and Confidence",
-                                 party_id == "MDG" & session_id == "2015-2016" ~ "Opposition",
-                                 party_id == "R" & session_id == "2015-2016" ~ "Opposition",
-                                 party_id == "V" & session_id == "2015-2016" ~ "Supply and Confidence",
-                                 party_id == "A" & session_id == "2014-2015" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2014-2015" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2014-2015" ~ "Opposition",
-                                 party_id == "H" & session_id == "2014-2015" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2014-2015" ~ "Government",
-                                 party_id == "KrF" & session_id == "2014-2015" ~ "Supply and Confidence",
-                                 party_id == "MDG" & session_id == "2014-2015" ~ "Opposition",
-                                 party_id == "R" & session_id == "2014-2015" ~ "Opposition",
-                                 party_id == "V" & session_id == "2014-2015" ~ "Supply and Confidence",
-                                 party_id == "A" & session_id == "2013-2014" ~ "Opposition",
-                                 party_id == "Sp" & session_id == "2013-2014" ~ "Opposition",
-                                 party_id == "SV" & session_id == "2013-2014" ~ "Opposition",
-                                 party_id == "H" & session_id == "2013-2014" ~ "Government", 
-                                 party_id == "FrP" & session_id == "2013-2014" ~ "Government",
-                                 party_id == "KrF" & session_id == "2013-2014" ~ "Supply and Confidence",
-                                 party_id == "MDG" & session_id == "2013-2014" ~ "Opposition",
-                                 party_id == "R" & session_id == "2013-2014" ~ "Opposition",
-                                 party_id == "V" & session_id == "2013-2014" ~ "Supply and Confidence",
-                                 party_id == "A" & session_id == "2012-2013" ~ "Government",
-                                 party_id == "Sp" & session_id == "2012-2013" ~ "Government",
-                                 party_id == "SV" & session_id == "2012-2013" ~ "Government",
-                                 party_id == "H" & session_id == "2012-2013" ~ "Opposition", 
-                                 party_id == "FrP" & session_id == "2012-2013" ~ "Opposition",
-                                 party_id == "KrF" & session_id == "2012-2013" ~ "Opposition",
-                                 party_id == "MDG" & session_id == "2012-2013" ~ "Opposition",
-                                 party_id == "R" & session_id == "2012-2013" ~ "Opposition",
-                                 party_id == "V" & session_id == "2012-2013" ~ "Opposition",
-                                 party_id == "A" & session_id == "2011-2012" ~ "Government",
-                                 party_id == "Sp" & session_id == "2011-2012" ~ "Government",
-                                 party_id == "SV" & session_id == "2011-2012" ~ "Government",
-                                 party_id == "H" & session_id == "2011-2012" ~ "Opposition", 
-                                 party_id == "FrP" & session_id == "2011-2012" ~ "Opposition",
-                                 party_id == "KrF" & session_id == "2011-2012" ~ "Opposition",
-                                 party_id == "MDG" & session_id == "2011-2012" ~ "Opposition",
-                                 party_id == "R" & session_id == "2011-2012" ~ "Opposition",
-                                 party_id == "V" & session_id == "2011-2012" ~ "Opposition"
-  ))
+                    party_id == "Sp" & session_id == "2021-2022" ~ "Government",
+                    party_id == "SV" & session_id == "2021-2022" ~ "Confidence and Supply",
+                    party_id == "H" & session_id == "2021-2022" ~ "Opposition",
+                    party_id == "FrP" & session_id == "2021-2022" ~ "Opposition",
+                    party_id == "KrF" & session_id == "2021-2022" ~ "Opposition",
+                    party_id == "MDG" & session_id == "2021-2022" ~ "Opposition",
+                    party_id == "R" & session_id == "2021-2022" ~ "Opposition",
+                    party_id == "V" & session_id == "2021-2022" ~ "Opposition",
+                    party_id == "A" & session_id == "2020-2021" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2020-2021" ~ "Opposition",
+                    party_id == "SV" & session_id == "2020-2021" ~ "Opposition",
+                    party_id == "H" & session_id == "2020-2021" ~ "Government", 
+                    party_id == "FrP" & session_id == "2020-2021" ~ "Confidence and Supply",
+                    party_id == "KrF" & session_id == "2020-2021" ~ "Government",
+                    party_id == "MDG" & session_id == "2020-2021" ~ "Opposition",
+                    party_id == "R" & session_id == "2020-2021" ~ "Opposition",
+                    party_id == "V" & session_id == "2020-2021" ~ "Government",
+                    party_id == "A" & session_id == "2019-2020" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2019-2020" ~ "Opposition",
+                    party_id == "SV" & session_id == "2019-2020" ~ "Opposition",
+                    party_id == "H" & session_id == "2019-2020" ~ "Government", 
+                    party_id == "FrP" & session_id == "2019-2020" ~ "Confidence and Supply",
+                    party_id == "KrF" & session_id == "2019-2020" ~ "Government",
+                    party_id == "MDG" & session_id == "2019-2020" ~ "Opposition",
+                    party_id == "R" & session_id == "2019-2020" ~ "Opposition",
+                    party_id == "V" & session_id == "2019-2020" ~ "Government",
+                    party_id == "A" & session_id == "2018-2019" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2018-2019" ~ "Opposition",
+                    party_id == "SV" & session_id == "2018-2019" ~ "Opposition",
+                    party_id == "H" & session_id == "2018-2019" ~ "Government", 
+                    party_id == "FrP" & session_id == "2018-2019" ~ "Government",
+                    party_id == "KrF" & session_id == "2018-2019" ~ "Government",
+                    party_id == "MDG" & session_id == "2018-2019" ~ "Opposition",
+                    party_id == "R" & session_id == "2018-2019" ~ "Opposition",
+                    party_id == "V" & session_id == "2018-2019" ~ "Government",
+                    party_id == "A" & session_id == "2017-2018" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2017-2018" ~ "Opposition",
+                    party_id == "SV" & session_id == "2017-2018" ~ "Opposition",
+                    party_id == "H" & session_id == "2017-2018" ~ "Government", 
+                    party_id == "FrP" & session_id == "2017-2018" ~ "Government",
+                    party_id == "KrF" & session_id == "2017-2018" ~ "Confidence and Supply",
+                    party_id == "MDG" & session_id == "2017-2018" ~ "Opposition",
+                    party_id == "R" & session_id == "2017-2018" ~ "Opposition",
+                    party_id == "V" & session_id == "2017-2018" ~ "Government",
+                    party_id == "A" & session_id == "2016-2017" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2016-2017" ~ "Opposition",
+                    party_id == "SV" & session_id == "2016-2017" ~ "Opposition",
+                    party_id == "H" & session_id == "2016-2017" ~ "Government", 
+                    party_id == "FrP" & session_id == "2016-2017" ~ "Government",
+                    party_id == "KrF" & session_id == "2016-2017" ~ "Confidence and Supply",
+                    party_id == "MDG" & session_id == "2016-2017" ~ "Opposition",
+                    party_id == "R" & session_id == "2016-2017" ~ "Opposition",
+                    party_id == "V" & session_id == "2016-2017" ~ "Confidence and Supply",
+                    party_id == "A" & session_id == "2015-2016" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2015-2016" ~ "Opposition",
+                    party_id == "SV" & session_id == "2015-2016" ~ "Opposition",
+                    party_id == "H" & session_id == "2015-2016" ~ "Government", 
+                    party_id == "FrP" & session_id == "2015-2016" ~ "Government",
+                    party_id == "KrF" & session_id == "2015-2016" ~ "Confidence and Supply",
+                    party_id == "MDG" & session_id == "2015-2016" ~ "Opposition",
+                    party_id == "R" & session_id == "2015-2016" ~ "Opposition",
+                    party_id == "V" & session_id == "2015-2016" ~ "Confidence and Supply",
+                    party_id == "A" & session_id == "2014-2015" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2014-2015" ~ "Opposition",
+                    party_id == "SV" & session_id == "2014-2015" ~ "Opposition",
+                    party_id == "H" & session_id == "2014-2015" ~ "Government", 
+                    party_id == "FrP" & session_id == "2014-2015" ~ "Government",
+                    party_id == "KrF" & session_id == "2014-2015" ~ "Confidence and Supply",
+                    party_id == "MDG" & session_id == "2014-2015" ~ "Opposition",
+                    party_id == "R" & session_id == "2014-2015" ~ "Opposition",
+                    party_id == "V" & session_id == "2014-2015" ~ "Confidence and Supply",
+                    party_id == "A" & session_id == "2013-2014" ~ "Opposition",
+                    party_id == "Sp" & session_id == "2013-2014" ~ "Opposition",
+                    party_id == "SV" & session_id == "2013-2014" ~ "Opposition",
+                    party_id == "H" & session_id == "2013-2014" ~ "Government", 
+                    party_id == "FrP" & session_id == "2013-2014" ~ "Government",
+                    party_id == "KrF" & session_id == "2013-2014" ~ "Confidence and Supply",
+                    party_id == "MDG" & session_id == "2013-2014" ~ "Opposition",
+                    party_id == "R" & session_id == "2013-2014" ~ "Opposition",
+                    party_id == "V" & session_id == "2013-2014" ~ "Confidence and Supply",
+                    party_id == "A" & session_id == "2012-2013" ~ "Government",
+                    party_id == "Sp" & session_id == "2012-2013" ~ "Government",
+                    party_id == "SV" & session_id == "2012-2013" ~ "Government",
+                    party_id == "H" & session_id == "2012-2013" ~ "Opposition", 
+                    party_id == "FrP" & session_id == "2012-2013" ~ "Opposition",
+                    party_id == "KrF" & session_id == "2012-2013" ~ "Opposition",
+                    party_id == "MDG" & session_id == "2012-2013" ~ "Opposition",
+                    party_id == "R" & session_id == "2012-2013" ~ "Opposition",
+                    party_id == "V" & session_id == "2012-2013" ~ "Opposition",
+                    party_id == "A" & session_id == "2011-2012" ~ "Government",
+                    party_id == "Sp" & session_id == "2011-2012" ~ "Government",
+                    party_id == "SV" & session_id == "2011-2012" ~ "Government",
+                    party_id == "H" & session_id == "2011-2012" ~ "Opposition", 
+                    party_id == "FrP" & session_id == "2011-2012" ~ "Opposition",
+                    party_id == "KrF" & session_id == "2011-2012" ~ "Opposition",
+                    party_id == "MDG" & session_id == "2011-2012" ~ "Opposition",
+                    party_id == "R" & session_id == "2011-2012" ~ "Opposition",
+                    party_id == "V" & session_id == "2011-2012" ~ "Opposition"
+))
 
 ## Plotting this 
 
@@ -832,7 +833,8 @@ ggplot(questiontextwparty, aes(x = session_id, fill = govposition)) +
 
 ggplot(questiontextwparty, aes(x = session_id, fill = gender)) + 
   geom_bar() + 
-  scale_fill_viridis(discrete = TRUE)
+  scale_fill_viridis(discrete = TRUE) + 
+  theme_bw()
 
 
 ggplot(questiontextwparty, aes(x = session_id, fill = party_id)) + 
@@ -959,14 +961,14 @@ Quite low charges on all, save for topic 30, which performs best. The clear thin
 
 ```{r, eval=TRUE}
 table(questiontext$session_id[which(str_detect(questiontext$text_a_l, "delmål 4.7")| 
-                                str_detect(questiontext$text_a_l, "bærekraftsmål 4") |
-                                str_detect(questiontext$text_a_l, "utdanning for bærekraftig utvikling") |
-                                str_detect(questiontext$text_q_l, "delmål 4.7")| 
-                                str_detect(questiontext$text_q_l, "bærekraftsmål 4") |
-                                str_detect(questiontext$text_q_l, "utdanning for bærekraftig utvikling") |
-                                str_detect(questiontext$justification_l, "delmål 4.7")| 
-                                str_detect(questiontext$justification_l, "bærekraftsmål 4") |
-                                str_detect(questiontext$justification_l, "utdanning for bærekraftig utvikling"))])
+      str_detect(questiontext$text_a_l, "bærekraftsmål 4") |
+      str_detect(questiontext$text_a_l, "utdanning for bærekraftig utvikling") |
+      str_detect(questiontext$text_q_l, "delmål 4.7")| 
+      str_detect(questiontext$text_q_l, "bærekraftsmål 4") |
+      str_detect(questiontext$text_q_l, "utdanning for bærekraftig utvikling") |
+      str_detect(questiontext$justification_l, "delmål 4.7")| 
+      str_detect(questiontext$justification_l, "bærekraftsmål 4") |
+      str_detect(questiontext$justification_l, "utdanning for bærekraftig utvikling"))])
 
 ```
 
@@ -1055,7 +1057,7 @@ get_case_fancey <- function (caseid = NA, good_manners = 0)
 
 Lets then get on to getting the decisions that turn out to be about the UN activities. 
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 
 a <- list()
 
@@ -1115,11 +1117,18 @@ for (x in unique(UN_decisions$case_id)) {
 
 UN_cases <- do.call("rbind", b)
 
+save(UN_cases, file = "Budget_Analysis/UN_decisions.Rdata")
+save(UN_cases, file = "Budget_Analysis/UN_cases.Rdata")
+
 ```
 
 Inside the decision text we find the full budgets relevant to our area. By applying the magix of **regex** we can discover hitherto unknown treasures of information. (meaning we can find how much money each org gets every year, which would probably take us about 15 minutes to do manually, but thanks to the magic of automation we can turn a 15 minute task into a 3 day task, because we're programmers)
 
 ```{r, eval=TRUE}
+
+load("Budget_Analysis/UN_decisions.Rdata")
+load("Budget_Analysis/UN_cases.Rdata")
+
 
 ## First i write a new function to retrieve strings next to the target words
 ## we are interested in. 
@@ -1160,7 +1169,8 @@ undpbudgetn <- list()
 
 for (x in 1:length(UN_decisions$cleanedtext_l)) {
   if(str_detect(UN_decisions$cleanedtext_l[x], "unicef")){
-  unicefbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "unicef", before = 1, after  = 14)
+  unicefbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], 
+                                 target = "unicef", before = 1, after  = 14)
   
   if(str_detect(unicefbudget[[x]], "reduseres")){
     tmpred <- grab_text(text = unicefbudget[[x]], target = "til", before = 0, after = 4)
@@ -1168,7 +1178,8 @@ for (x in 1:length(UN_decisions$cleanedtext_l)) {
     unicefbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
   }else{
   
-  tmp1 <- str_extract(unicefbudget[[x]], "([:digit:]{1,3}\\s?)[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{3}")
+  tmp1 <- str_extract(unicefbudget[[x]], 
+                      "([:digit:]{1,3}\\s?)[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{3}")
   
   unicefbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
   }
@@ -1200,7 +1211,8 @@ Lets look at WFP.
 ```{r, eval=TRUE}
 for (x in 1:length(UN_decisions$cleanedtext_l)) {
   if(str_detect(UN_decisions$cleanedtext_l[x], "wfp")){
-    wfpbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "wfp", before = 1, after  = 14)
+    wfpbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], 
+                                target = "wfp", before = 1, after  = 14)
     if(str_detect(wfpbudget[[x]], "reduseres")){
       tmpred <- grab_text(text = wfpbudget[[x]], target = "til", before = 0, after = 4)
       tmp1 <- str_extract(tmpred, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
@@ -1208,7 +1220,8 @@ for (x in 1:length(UN_decisions$cleanedtext_l)) {
     }else{
       
       if(str_detect(wfpbudget[[x]], "auka")){
-      tmpinc <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "wfp", before = 1, after = 20)
+      tmpinc <- grab_text(text = UN_decisions$cleanedtext_l[x], 
+                          target = "wfp", before = 1, after = 20)
       tmpinc2 <- grab_text(text = tmpinc, target = "til", before = 0, after = 5)
       tmpinc3 <- str_extract(tmpinc2, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
 
@@ -1249,7 +1262,8 @@ Next we look at UNDP.
 
 for (x in 1:length(UN_decisions$cleanedtext_l)) {
   if(str_detect(UN_decisions$cleanedtext_l[x], "undp")){
-    undpbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "undp", before = 1, after  = 14)
+    undpbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], 
+                                 target = "undp", before = 1, after  = 14)
     if(str_detect(undpbudget[[x]], "reduseres")){
       tmpred <- grab_text(text = undpbudget[[x]], target = "til", before = 0, after = 4)
       tmp1 <- str_extract(tmpred, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
@@ -1257,7 +1271,8 @@ for (x in 1:length(UN_decisions$cleanedtext_l)) {
     }else{
       
       if(str_detect(undpbudget[[x]], "auka")){
-        tmpinc <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "undp", before = 1, after = 20)
+        tmpinc <- grab_text(text = UN_decisions$cleanedtext_l[x], 
+                            target = "undp", before = 1, after = 20)
         tmpinc2 <- grab_text(text = tmpinc, target = "til", before = 0, after = 5)
         tmpinc3 <- str_extract(tmpinc2, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
         
@@ -1265,7 +1280,8 @@ for (x in 1:length(UN_decisions$cleanedtext_l)) {
         
       }else{
         
-        tmp1 <- str_extract(undpbudget[[x]], "([:digit:]{1,3}\\s?)[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{3}")
+        tmp1 <- str_extract(undpbudget[[x]], 
+                            "([:digit:]{1,3}\\s?)[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{3}")
         
         undpbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
       }}
@@ -1297,23 +1313,28 @@ Lets finally have a gander at UNAIDS grants for every year.
 
 for (x in 1:length(UN_decisions$cleanedtext_l)) {
   if(str_detect(UN_decisions$cleanedtext_l[x], "unaids")){
-    unaidsbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "unaids", before = 1, after  = 14)
+    unaidsbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], 
+                                   target = "unaids", before = 1, after  = 14)
     if(str_detect(unaidsbudget[[x]], "reduseres")){
-      tmpred <- grab_text(text = unaidsbudget[[x]], target = "til", before = 0, after = 4)
+      tmpred <- grab_text(text = unaidsbudget[[x]], 
+                          target = "til", before = 0, after = 4)
       tmp1 <- str_extract(tmpred, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
       unaidsbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
     }else{
       
       if(str_detect(unaidsbudget[[x]], "auka")){
-        tmpinc <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "unaids", before = 1, after = 20)
-        tmpinc2 <- grab_text(text = tmpinc, target = "til", before = 0, after = 5)
+        tmpinc <- grab_text(text = UN_decisions$cleanedtext_l[x], 
+                            target = "unaids", before = 1, after = 20)
+        tmpinc2 <- grab_text(text = tmpinc, 
+                             target = "til", before = 0, after = 5)
         tmpinc3 <- str_extract(tmpinc2, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
         
         unaidsbudgetn[[x]] <- (as.numeric(str_remove_all(tmpinc3, " ")))
         
       }else{
         
-        tmp1 <- str_extract(unaidsbudget[[x]], "([:digit:]{1,3}\\s?)[:digit:]{1,3}\\s[:digit:]{1,3}\\s000")
+        tmp1 <- str_extract(unaidsbudget[[x]], 
+                            "([:digit:]{1,3}\\s?)[:digit:]{1,3}\\s[:digit:]{1,3}\\s000")
         
         unaidsbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
       }}

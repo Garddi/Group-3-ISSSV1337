@@ -74,6 +74,10 @@ for (x in unique(UN_decisions$case_id)) {
   b[[x]] <- a[[x]][["root"]]
 }
 
+save(UN_decisions, file = "Budget_Analysis/UN_decisions.Rdata")
+save(UN_cases, file = "Budget_Analysis/UN_cases.Rdata")
+
+
 ### This seems to capture all budgets, which we can still use. 
 
 UN_cases <- do.call("rbind", b)
@@ -204,7 +208,7 @@ ggplot(wfpbudget_f, aes(x = Year, y = WFPMoney)) +
   geom_point() + 
   geom_line() + 
   theme_bw() + 
-  labs(title = "UNICEF grants by year", y = "NOK", x = "") + 
+  labs(title = "WFP grants by year", y = "NOK", x = "") + 
   scale_x_continuous(breaks = c(2011, 2012, 2013, 2014, 2015, 2016,
                                 2017, 2018, 2019, 2020, 2021, 2022))
 
