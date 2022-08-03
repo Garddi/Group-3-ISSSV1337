@@ -77,7 +77,8 @@ for (x in unique(UN_decisions$case_id)) {
 save(UN_decisions, file = "Budget_Analysis/UN_decisions.Rdata")
 save(UN_cases, file = "Budget_Analysis/UN_cases.Rdata")
 
-
+load("Budget_Analysis/UN_decisions.Rdata")
+load("Budget_Analysis/UN_cases.Rdata")
 ### This seems to capture all budgets, which we can still use. 
 
 UN_cases <- do.call("rbind", b)

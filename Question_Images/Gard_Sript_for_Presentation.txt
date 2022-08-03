@@ -1,0 +1,154 @@
+
+Question analysis
+ - as you may or may not know, mps ask questions
+ - these questions provide a possiblity to hold the government accountable
+ - Or to promote ones own policy agenda
+
+A quick look at the data
+ -  We have in our particular period, 27 792 questions asked. 
+ - With such a large amount of questions we should expect exciting results. 
+ 
+
+Image 0 
+
+This is somewhat uninteresting, lets look at some other indicators. 
+
+1_1, 1_2 
+
+2_1, 2_2
+
+3_1, 3_2
+
+What do we see here?
+ -  People are suddenly talking a lot about UN related orgs and stuff 
+ -  I think we all have a clue about it being somewhat related to Ukraine. 
+ -  Unsurprisingly it seems people are using the UN organisations to talk about the big current event
+
+What more can we do here?
+ -  The size of our corpus lends itself to being applied to Structural Topic Modeling (STM)
+ -  An stm is a form of unsupervised machine learning, based on grouping documents after shared characteristics. 
+ -  We can use this to create an overview over what kind of topics the questions that mention UNA or sustainable development are about
+ -  We tokenize, stem and create a dfm over the entire documents. 
+
+How do we apply this model?
+ -  We will primarily take two angels to this.
+ -  First we will assign topics to the questions that mention our relevant keywords
+ -  Second, we will look at documents that charge highly on certain topics, and see how they charge on other topics
+ -  All the documents get a gamma for each topic, which is a measure of how likely it is that the document belongs to that topic
+ -  These gammas form the backbone of this strategy. 
+
+What are the results of the topic assignment to our central documents?
+image 4 here. 
+
+Okay, but what are these topics?
+
+5_1 and 5_2 here
+
+What if we look deeper
+
+6_0 here
+
+These are about
+
+6_1 and 6_2 here
+
+Even deeper
+
+7_0 here
+
+These are about 
+
+7_1 and 7_2 here
+
+As I mentioned
+ -  There is a unique category dedicated to the UN, but also with a focus on humanitarian causes
+ -  This is separate from the security politics that the UN use. 
+ -  So, we take the 650 documents that charge the highest on topic 47
+ -  Lets have a look at what those documents charge on other topics
+
+We find a few more interesting categories
+
+9_0 here. 
+
+
+First lets look at our UN documents and their gamma on these topics
+
+9_1, 9_2, 9_3, 9_4 and 9_5 goes here, either as separate slides or more in one, u decide. 
+
+Lets have a look at education and sustainability then
+ -  Topics 21, 42 and 52 were about education
+ -  Topics 43 was about sustainability
+
+Lets check the gamma densities
+
+11_1, 11_2 and 11_3 goes here
+
+Findings 
+ -  Sustainability and education is not readily shared with each other
+ -  It is mentioned more in regards to university level education
+ -  Low focus on "høyskoler" and on elementary schools.
+ -  The crossections of gammas on sustainability and education, work as a measure of UBU knowledge.
+ -  In the future this code, or modified versions of it, can be run on future sessions, to isolate the degree to which these topics intersect in the future. 
+
+
+Budget Analysis
+ -  The adventure into the decisions gave some specific results
+ -  We found that there were mostly budgets.
+ -  This meant we could find a way to automate the retrieval of those budgets
+ -  or did it...?
+ -  Lessons learned
+
+Adventures in REGEX
+
+```{r, eval=FALSE}
+
+grab_text <- function(text, target, before, after){
+  min <- which(unlist(map(str_split(text, "\\s"), ~grepl(target, .x))))-before
+  max <- which(unlist(map(str_split(text, "\\s"), ~grepl(target, .x))))+after
+  
+  paste(str_split(text, "\\s")[[1]][min:max], collapse = " ")
+}
+
+undpbudget <- list()
+undpbudgetn <- list()
+
+for (x in 1:length(UN_decisions$cleanedtext_l)) {
+  if(str_detect(UN_decisions$cleanedtext_l[x], "undp")){
+    undpbudget[[x]] <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "undp", before = 1, after  = 14)
+    if(str_detect(undpbudget[[x]], "reduseres")){
+      tmpred <- grab_text(text = undpbudget[[x]], target = "til", before = 0, after = 4)
+      tmp1 <- str_extract(tmpred, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
+      undpbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
+    }else{
+      
+      if(str_detect(undpbudget[[x]], "auka")){
+        tmpinc <- grab_text(text = UN_decisions$cleanedtext_l[x], target = "undp", before = 1, after = 20)
+        tmpinc2 <- grab_text(text = tmpinc, target = "til", before = 0, after = 5)
+        tmpinc3 <- str_extract(tmpinc2, "[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{1,3}")
+        
+        undpbudgetn[[x]] <- (as.numeric(str_remove_all(tmpinc3, " ")))
+        
+      }else{
+        
+        tmp1 <- str_extract(undpbudget[[x]], "([:digit:]{1,3}\\s?)[:digit:]{1,3}\\s[:digit:]{1,3}\\s[:digit:]{3}")
+        
+        undpbudgetn[[x]] <- (as.numeric(str_remove_all(tmp1, " ")))
+      }}
+  }else{next}
+}
+```
+
+- all of this to retrieve 15 lines of information
+- and that is how you turn a 15 minute task, into a 3-day project 
+-  **automation**
+
+
+Regardless of how it was retrieved, here are the results
+
+12_1,12_2,12_3 and 12_4 here. 
+
+Conluding remarks
+ - There seems to be a consistent trend of reducing budgets
+ - Im sure none of this is a surprise to our mission provider
+ - But now it has been done *automatically* 
+
