@@ -1,6 +1,6 @@
 ---
 title: "ISSSV-1337, Group 3 Report UN Association of Norway"
-author: "Gard Olav Dietrichson, Hannes Brauer, Markus Opheim, Andreas Kroknes, Ingrid Johannesen, Nora Didriksen, Tia Tiller"
+author: "Gard, Markus, Andreas, Tia, Nora, Ingrid & Hannes"
 date: '2022-07-25'
 output: pdf_document
 ---
