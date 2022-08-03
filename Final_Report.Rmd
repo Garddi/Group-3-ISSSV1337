@@ -29,6 +29,29 @@ The final level of search words was the relevant humanitarian sub organisations 
 
 Finally it is worth mentioning that we also foresaw the large amount of documents being being problematic, as such, we early on decided to limit our timeframe. The package stortingsscrape informs us that voting data is only available from the 2011-2012 session and onwards, so we viewed that as a natural starting point. 
 
+# Joint setup code and used packages
+
+Below we include a setup code for the things we do in this script, this primarily includes the relevant packages, but also included is a function for a colourblind safe palette, given that we are interested in accessibility. 
+
+```{r,eval=TRUE, echo=FALSE}
+
+library(tidyverse)
+library(stortingscrape)
+library(tidytext)
+library(quanteda)
+library(stm)
+library(tidyr)
+library(viridis)
+
+
+safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", 
+                             "#117733", "#332288", "#AA4499", 
+                             "#44AA99", "#999933", "#882255", 
+                             "#661100", "#6699CC", "#888888")
+
+
+
+```
 ## Sectioning 
 
 Due to the large corpus that would arise from joining all documents, and the severe lack of coherent genre textuality, and to the unique opportunities afforded by each form of retrievable information, we decided to split up our work, and pursue separate roads of inquiry based on each section. 
@@ -49,8 +72,6 @@ The questions were scraped, below is the plot drawing the overview of the spread
 In order to answer this, we scrape all the questions from the storting's homepage. The following code scrapes all the questions for our relevant time frame. 
 
 ```{r, eval=FALSE}
-library(tidyverse)
-library(stortingscrape)
 
 ## For now the sessions we are interested in are limited to 2011-2022
 
@@ -226,7 +247,10 @@ The model has now been run, and we have a Latent Dirichlect Allocation model wit
 
 The next step is then to make a grouping of the tokens, and creating a frame of all the documents and their gamma for each topic
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
+
+load("Question_Analysis/QuestionSTM_K75.Rdata")
+
 questiontopics_75 <- tidy(questiontokens_lda_75, 
                        matrix = "beta")
 
@@ -302,7 +326,7 @@ topic_assignment <- topic_assignment %>%
 
 The next step is then to join these variables with our full set of questions. Leaving us with a dataset that we can filter out keywords on. The previous frames and objects will still be used later, when we explore alternative topic spreads. 
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 load("Question_Data/All_Questions.Rdata")
 
 ## Changing it all to lower case.
@@ -376,15 +400,310 @@ textrelevance <- left_join(textrelevance, topic_assignment, by = "id")
 
 ## lets have a look at the most frequent topics
 
-ggplot(textrelevance, aes(x = TopTopic)) + 
-  geom_histogram(binwidth = 1)
+toppingtopics <- textrelevance %>% 
+  group_by(TopTopic) %>% 
+  add_count() %>% 
+  summarise(count = mean(n)) %>% 
+  slice_max(order_by = count, n = 10)
 
-## Most common top topic is topic 54,
+toppingtopicswords <- questiontopics_group_75 %>% 
+  filter(topic %in% toppingtopics$TopTopic)
 
-ggplot(textrelevance, aes(x = SecTopic)) + 
-  geom_histogram(binwidth = 1)
+## Lets look at what these topics are about
 
-ggplot(textrelevance, aes(x = ThirdTopic)) + 
-  geom_histogram(binwidth = 1)
+toppingtopicswords %>%
+  ggplot(aes(term, beta, fill = topic)) + 
+  geom_bar(stat = "identity") + 
+  facet_wrap( ~ topic, 
+              ncol = 3, 
+              scales = "free") + 
+  labs(x = "", y = "Word-Topic probability") + 
+  theme_bw() + 
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+```
+
+Shocking, I know, documents that mention UN organizations are usually about the UN. The interesting thing is that UN organizations are frequently used in talks regarding climate policy and emissions policies. This implies that this sector is more ahead relatively speaking in regards to having a global view on the problems at hand. This is perhaps unsurprising given the global nature of the issue, but perhaps an important path in the future can be to focus on making sure that some other topics, related to global issues are also related more to UN and their organizations. 
+
+We should probably investigate the secondary topics, especially since topic 73 is a dedicated nynorsk category. It helps to look at the secondary categories. 
+
+
+```{r, eval=TRUE}
+secondtopics <- textrelevance %>% 
+  group_by(SecTopic) %>% 
+  add_count() %>% 
+  summarise(count = mean(n)) %>% 
+  slice_max(order_by = count, n = 10)
+
+secondtopicswords <- questiontopics_group_75 %>% 
+  filter(topic %in% secondtopics$SecTopic)
+
+## Lets look at what these topics are about
+
+secondtopicswords %>%
+  ggplot(aes(term, beta, fill = topic)) + 
+  geom_bar(stat = "identity") + 
+  facet_wrap( ~ topic, 
+              ncol = 3, 
+              scales = "free") + 
+  labs(x = "", y = "Word-Topic probability") + 
+  theme_bw() + 
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+
+```{r,eval=TRUE}
+thirdtopics <- textrelevance %>% 
+  group_by(ThirdTopic) %>% 
+  add_count() %>% 
+  summarise(count = mean(n)) %>% 
+  slice_max(order_by = count, n = 10)
+
+thirdtopicswords <- questiontopics_group_75 %>% 
+  filter(topic %in% thirdtopics$ThirdTopic)
+
+## Lets look at what these topics are about
+
+thirdtopicswords %>%
+  ggplot(aes(term, beta, fill = topic)) + 
+  geom_bar(stat = "identity") + 
+  facet_wrap( ~ topic, 
+              ncol = 3, 
+              scales = "free") + 
+  labs(x = "", y = "Word-Topic probability") + 
+  theme_bw() + 
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+Topic 55 charges quite highly in this third topic category. This appears to be a generic "plan of action" category, most likely a common topic for all questions which asks for coherent national policy in fields. The problem here is that we are currently scraping quite low gamma values, so more common topics are brought to the forefront.
+
+So we have talked about what the questions that mention the UN and their associated organisations are talking about, what these questions are substantially about. Unsurprisingly these questions are mostly about climate, health, and the UN itself. Lets now look at some general spread of the questions, when are these questions asked? Do we see a historic pattern?
+
+First lets add some variables of interest, such as mp identities and join it with out priority level. 
+
+```{r,eval=TRUE}
+
+## First we add the priority levels for some of our observations. 
+
+textrelevance <- textrelevance %>%
+  mutate(priority_word_level = case_when(str_detect(text_q_l, "fn-sambandet") ~ "1",
+           str_detect(text_q_l, "utdanning for bærekraftig utvikling")  ~ "2", 
+           str_detect(text_q_l, "utdanning for berekraftig utvikling") ~ "2",
+           str_detect(text_q_l, "unicef") ~ "3",
+           str_detect(text_q_l, "wfp") ~ "3",
+           str_detect(text_q_l, "unaids") ~ "3",
+           str_detect(text_a_l, "fn-sambandet") ~ "1",
+           str_detect(text_a_l, "utdanning for bærekraftig utvikling") ~ "2",
+           str_detect(text_a_l, "utdanning for berekraftig utvikling") ~ "2",
+           str_detect(text_a_l, "unicef") ~ "3",
+           str_detect(text_a_l, "wfp") ~ "3",
+           str_detect(text_a_l, "unaids") ~ "3",
+           str_detect(justification_l, "fn-sambandet") ~ "1",
+           str_detect(justification_l, "utdanning for bærekraftig utvikling") ~ "2",
+           str_detect(justification_l, "utdanning for berekraftig utvikling") ~ "2",
+           str_detect(justification_l, "unicef") ~ "3",
+           str_detect(justification_l, "wfp") ~ "3",
+           str_detect(justification_l, "unaids") ~ "3",
+           str_detect(text_q_l, "unesco") ~ "3",
+           str_detect(text_a_l, "unesco") ~ "3",
+           str_detect(justification_l, "unesco") ~ "3",
+           str_detect(text_q_l, "undp") ~ "3",
+           str_detect(text_a_l, "undp") ~ "3",
+           str_detect(justification_l, "undp") ~ "3",
+           str_detect(text_q_l, "\\b(ilo)\\b") ~ "3",
+           str_detect(text_a_l, "\\b(ilo)\\b") ~ "3",
+           str_detect(justification_l, "\\b(ilo)\\b") ~ "3",
+           str_detect(text_q_l, "fns matvareprogram") ~ "3",
+           str_detect(text_a_l, "fns matvareprogram") ~ "3",
+           str_detect(justification_l, "fns matvareprogram") ~ "3",
+           str_detect(text_q_l, "who") ~ "3",
+           str_detect(text_a_l, "who") ~ "3",
+           str_detect(justification_l, "who") ~ "3",
+           str_detect(text_q_l, "verdens helseorganisasjon") ~ "3",
+           str_detect(text_a_l, "verdens helseorganisasjon") ~ "3",
+           str_detect(justification_l, "verdens helseorganisasjon") ~ "3",
+           str_detect(text_q_l, "ipcc") ~ "3", 
+           str_detect(text_a_l, "ipcc") ~ "3",
+           str_detect(justification_l, "ipcc") ~ "3",
+           str_detect(text_q_l, "fns klimapanel") ~ "3",
+           str_detect(text_a_l, "fns klimapanel") ~ "3",
+           str_detect(justification_l, "fns klimapanel") ~ "3",
+           str_detect(text_q_l, "bærekraftsmål") ~ "3",
+           str_detect(text_a_l, "bærekraftsmål") ~ "3",
+           str_detect(justification_l, "bærekraftsmål") ~ "3",
+           str_detect(text_q_l, "berekraftsmål") ~ "3",
+           str_detect(text_a_l, "berekraftsmål") ~ "3",
+           str_detect(justification_l, "berekraftsmål") ~ "3"
+           str_detect(text_q_l, "2030-agendaen") ~ "3",
+           str_detect(text_a_l, "2030-agendaen") ~ "3",
+           str_detect(justification_l, "2030-agendaen") ~ "3",
+           str_detect(text_q_l, "agenda 2030") ~ "3",
+           str_detect(text_a_l, "agenda 2030") ~ "3",
+           str_detect(justification_l, "agenda 2030") ~ "3",
+           str_detect(text_q_l, "bærekraftsmål 4") ~ "2",
+           str_detect(text_a_l, "bærekraftsmål 4") ~ "2",
+           str_detect(justification_l, "bærekraftsmål 4") ~ "2"))
+
+## First we need to get all the mps for the period, then join them with the full 
+## dataset
+
+periods_storting <- periods_storting %>%
+  filter(id %in% c("2021-2025", "2017-2021", "2013-2017", "2009-2013"))
+
+j <- list()
+
+for (x in periods_storting$id) {
+  j[[x]] <- get_parlperiod_mps(periodid = x, substitute = TRUE, 
+                               good_manners = 0)
+}
+
+
+allmps <- do.call("rbind", j)
+
+allmpsparties <- allmps %>% 
+  select(question_from_id = mp_id, gender, party_id, county_id, period_id)
+
+textrelevance <- textrelevance %>%
+  mutate(period_id = case_when(session_id == "2021-2022" ~ "2021-2025",
+                               session_id == "2020-2021" ~ "2017-2021",
+                               session_id == "2019-2020" ~ "2017-2021",
+                               session_id == "2018-2019" ~ "2017-2021",
+                               session_id == "2017-2018" ~ "2017-2021",
+                               session_id == "2016-2017" ~ "2013-2017",
+                               session_id == "2015-2016" ~ "2013-2017",
+                               session_id == "2014-2015" ~ "2013-2017",
+                               session_id == "2013-2014" ~ "2013-2017",
+                               session_id == "2012-2013" ~ "2009-2013",
+                               session_id == "2011-2012" ~ "2009-2013"))
+
+textrelevancewparty <- left_join(textrelevance, allmpsparties, 
+                                 by = c("question_from_id", "period_id"))
+
+## Finally we assign each question as comming from either a government party,
+## an opposition party, or a confidence and supply party
+
+textrelevancewparty <- textrelevancewparty %>% 
+  mutate(govposition = case_when(party_id == "A" & session_id == "2021-2022" ~ "Government",
+                                 party_id == "Sp" & session_id == "2021-2022" ~ "Government",
+                                 party_id == "SV" & session_id == "2021-2022" ~ "Confidence and Supply",
+                                 party_id == "H" & session_id == "2021-2022" ~ "Opposition",
+                                 party_id == "FrP" & session_id == "2021-2022" ~ "Opposition",
+                                 party_id == "KrF" & session_id == "2021-2022" ~ "Opposition",
+                                 party_id == "MDG" & session_id == "2021-2022" ~ "Opposition",
+                                 party_id == "R" & session_id == "2021-2022" ~ "Opposition",
+                                 party_id == "V" & session_id == "2021-2022" ~ "Opposition",
+                                 party_id == "A" & session_id == "2020-2021" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2020-2021" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2020-2021" ~ "Opposition",
+                                 party_id == "H" & session_id == "2020-2021" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2020-2021" ~ "Confidence and Supply",
+                                 party_id == "KrF" & session_id == "2020-2021" ~ "Government",
+                                 party_id == "MDG" & session_id == "2020-2021" ~ "Opposition",
+                                 party_id == "R" & session_id == "2020-2021" ~ "Opposition",
+                                 party_id == "V" & session_id == "2020-2021" ~ "Government",
+                                 party_id == "A" & session_id == "2019-2020" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2019-2020" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2019-2020" ~ "Opposition",
+                                 party_id == "H" & session_id == "2019-2020" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2019-2020" ~ "Confidence and Supply",
+                                 party_id == "KrF" & session_id == "2019-2020" ~ "Government",
+                                 party_id == "MDG" & session_id == "2019-2020" ~ "Opposition",
+                                 party_id == "R" & session_id == "2019-2020" ~ "Opposition",
+                                 party_id == "V" & session_id == "2019-2020" ~ "Government",
+                                 party_id == "A" & session_id == "2018-2019" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2018-2019" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2018-2019" ~ "Opposition",
+                                 party_id == "H" & session_id == "2018-2019" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2018-2019" ~ "Government",
+                                 party_id == "KrF" & session_id == "2018-2019" ~ "Government",
+                                 party_id == "MDG" & session_id == "2018-2019" ~ "Opposition",
+                                 party_id == "R" & session_id == "2018-2019" ~ "Opposition",
+                                 party_id == "V" & session_id == "2018-2019" ~ "Government",
+                                 party_id == "A" & session_id == "2017-2018" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2017-2018" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2017-2018" ~ "Opposition",
+                                 party_id == "H" & session_id == "2017-2018" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2017-2018" ~ "Government",
+                                 party_id == "KrF" & session_id == "2017-2018" ~ "Confidence and Supply",
+                                 party_id == "MDG" & session_id == "2017-2018" ~ "Opposition",
+                                 party_id == "R" & session_id == "2017-2018" ~ "Opposition",
+                                 party_id == "V" & session_id == "2017-2018" ~ "Government",
+                                 party_id == "A" & session_id == "2016-2017" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2016-2017" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2016-2017" ~ "Opposition",
+                                 party_id == "H" & session_id == "2016-2017" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2016-2017" ~ "Government",
+                                 party_id == "KrF" & session_id == "2016-2017" ~ "Confidence and Supply",
+                                 party_id == "MDG" & session_id == "2016-2017" ~ "Opposition",
+                                 party_id == "R" & session_id == "2016-2017" ~ "Opposition",
+                                 party_id == "V" & session_id == "2016-2017" ~ "Confidence and Supply",
+                                 party_id == "A" & session_id == "2015-2016" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2015-2016" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2015-2016" ~ "Opposition",
+                                 party_id == "H" & session_id == "2015-2016" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2015-2016" ~ "Government",
+                                 party_id == "KrF" & session_id == "2015-2016" ~ "Confidence and Supply",
+                                 party_id == "MDG" & session_id == "2015-2016" ~ "Opposition",
+                                 party_id == "R" & session_id == "2015-2016" ~ "Opposition",
+                                 party_id == "V" & session_id == "2015-2016" ~ "Confidence and Supply",
+                                 party_id == "A" & session_id == "2014-2015" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2014-2015" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2014-2015" ~ "Opposition",
+                                 party_id == "H" & session_id == "2014-2015" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2014-2015" ~ "Government",
+                                 party_id == "KrF" & session_id == "2014-2015" ~ "Confidence and Supply",
+                                 party_id == "MDG" & session_id == "2014-2015" ~ "Opposition",
+                                 party_id == "R" & session_id == "2014-2015" ~ "Opposition",
+                                 party_id == "V" & session_id == "2014-2015" ~ "Confidence and Supply",
+                                 party_id == "A" & session_id == "2013-2014" ~ "Opposition",
+                                 party_id == "Sp" & session_id == "2013-2014" ~ "Opposition",
+                                 party_id == "SV" & session_id == "2013-2014" ~ "Opposition",
+                                 party_id == "H" & session_id == "2013-2014" ~ "Government", 
+                                 party_id == "FrP" & session_id == "2013-2014" ~ "Government",
+                                 party_id == "KrF" & session_id == "2013-2014" ~ "Confidence and Supply",
+                                 party_id == "MDG" & session_id == "2013-2014" ~ "Opposition",
+                                 party_id == "R" & session_id == "2013-2014" ~ "Opposition",
+                                 party_id == "V" & session_id == "2013-2014" ~ "Confidence and Supply",
+                                 party_id == "A" & session_id == "2012-2013" ~ "Government",
+                                 party_id == "Sp" & session_id == "2012-2013" ~ "Government",
+                                 party_id == "SV" & session_id == "2012-2013" ~ "Government",
+                                 party_id == "H" & session_id == "2012-2013" ~ "Opposition", 
+                                 party_id == "FrP" & session_id == "2012-2013" ~ "Opposition",
+                                 party_id == "KrF" & session_id == "2012-2013" ~ "Opposition",
+                                 party_id == "MDG" & session_id == "2012-2013" ~ "Opposition",
+                                 party_id == "R" & session_id == "2012-2013" ~ "Opposition",
+                                 party_id == "V" & session_id == "2012-2013" ~ "Opposition",
+                                 party_id == "A" & session_id == "2011-2012" ~ "Government",
+                                 party_id == "Sp" & session_id == "2011-2012" ~ "Government",
+                                 party_id == "SV" & session_id == "2011-2012" ~ "Government",
+                                 party_id == "H" & session_id == "2011-2012" ~ "Opposition", 
+                                 party_id == "FrP" & session_id == "2011-2012" ~ "Opposition",
+                                 party_id == "KrF" & session_id == "2011-2012" ~ "Opposition",
+                                 party_id == "MDG" & session_id == "2011-2012" ~ "Opposition",
+                                 party_id == "R" & session_id == "2011-2012" ~ "Opposition",
+                                 party_id == "V" & session_id == "2011-2012" ~ "Opposition"
+))
+
+```
+
+Now that we have a dataset with more info, lets look at some of the patterns we can notice over time.
+
+```{r, eval=TRUE}
+ggplot(textrelevancewparty, aes(x = session_id, fill = party_id)) + 
+  geom_bar() + 
+  scale_fill_discrete(type = safe_colorblind_palette) + 
+  theme_bw()
+
+ggplot(textrelevancewparty, aes(x = session_id, fill = gender)) + 
+  geom_bar() + 
+  scale_fill_viridis(discrete = TRUE)
+
+ggplot(textrelevancewparty, aes(x = session_id, fill = govposition)) + 
+  geom_bar() + 
+  scale_fill_viridis(discrete = TRUE) + 
+  theme_bw()
 
 ```
