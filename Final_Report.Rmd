@@ -1362,3 +1362,352 @@ Lots of supplementary budgets here. Weird that the negotiations in 2018 lead to 
 Note that for all of these, Støres 2021 budget is coded as 2022, purely out of convenience. 
 
 Overall this provides a possibility of overviewing the budgets of the UN organizations, that are gathered in an automated manner. Although, given the detailed regex controls it is arguable whether it is truly "automatic", nonetheless it can be reused in the future to gather even more data simply by adding the session in the start of the code.
+
+# Hearings
+
+This is a step by step guide to scraping the hearings for info on FN-Sambandet,
+and related priority words
+
+
+```{r, eval=FALSE}
+#library in relevant packages
+library(tidyverse)
+library(tidytext)
+install.packages("quanteda")
+library(quanteda)
+install.packages("stm")
+library(stm)
+library(tidyr)
+```
+
+
+```{r}
+#library in the stortingpackage
+library(stortingscrape)
+
+#there are three relevant functions for hearings. With the questionmark we learn more about them
+?get_session_hearings()
+?get_hearing_input()
+?get_written_hearing_input()
+
+#before running one of these functions, we want to get all parliament sessions and specify that we only scrape from 2011 onwards
+#therefore we create an object for the sessions and get all parliament sessions
+sessions_storting <- get_parlsessions()
+
+#as you now see, the sessions appear as an object in your environment. Let's filter out the relevant years
+#filter out the sessions after 2011, which have relevant data
+sessions_storting <- sessions_storting %>%
+  filter(id %in% c("2011-2012", "2012-2013", "2013-2014",
+                   "2014-2015", "2015-2016", "2016-2017",
+                   "2017-2018", "2018-2019", "2019-2020", 
+                   "2020-2021", "2021-2022"))
+
+# now we are creating three lists to fill in information afterwards. We create three lists, as we have three relevant functions to run.
+a <- list()
+b <- list()
+c <- list()
+
+#you can now see the three empty lists in your environment, let's fill them
+
+#now we can run a for loop for all three relevant functions
+
+#We need to start with get_session_hearings, as we need hearing ids for the other functions.
+#run a for-loop to retrieve session hearings. I also added the progress bar
+for(x in unique(sessions_storting$id)){
+  it <- 100*(which(unique(sessions_storting$id) == x) / length(unique(sessions_storting$id)))
+  cat(paste0(sprintf("Progress: %.4f%%             ", it), "\r"))
+  a[[x]] <- get_session_hearings(sessionid = x, good_manners = 0, cores = 1)
+}
+
+#place the retrieved data from list a in a new object
+allsessionshearings <- do.call(rbind, a)
+
+?unnest
+#unnesting the data into columns that we can work with
+allsessionshearings <- allsessionshearings %>% as_tibble() %>% 
+  unnest(cols = root, hearing, hearing_case_info, hearing_date )
+
+#no we find a large dataset with a lot of variables and a good overview over hearings in our allsessionhearings object
+#as we now know the hearing ids, we can run the other two functions
+
+?get_hearing_input
+#First, running a loop to retrieve hearing inputs. I am amending the loop according to where the hearing id is found and what arguments the function demands me to specify.
+#I am also directing the data towards list b.
+#as it returns an error message, we use the "try" function
+for(x in unique(allsessionshearings$hearing_id)){
+  it <- 100*(which(unique(allsessionshearings$hearing_id) == x) / length(unique(allsessionshearings$hearing_id)))
+  cat(paste0(sprintf("Progress: %.4f%%             ", it), "\r"))
+  try(b[[x]] <- get_hearing_input(hearingid = x, good_manners = 0), silent = TRUE)
+}
+
+#we are observing that data from before the 2020-2021 sessions is missing
+#we continue with the input data we can extract
+
+#this is just a test for the last hearing that returns data
+get_hearing_input(hearingid = "10004183")
+
+#place the retrieved data from list b into another object we can work with
+hearinginput <- do.call(rbind, b)
+
+#unnesting again. I can choose which variables are relevant and leave the rest out. In case I want to include e.g. response date at a later stage, I have to amend the code here.
+#You can check all variables in the hearinginput object
+hearinginput <- hearinginput %>% as_tibble() %>% 
+  unnest(cols = hearing_id, committee_id, hearing_input_organization, hearing_input_title, hearing_input_text)
+
+?get_written_hearing_input
+#Second, running a loop to retrieve written hearing input. Remember amending for the data to be put in list c.
+#For some reason, the loop only returns NA values - quickly stop the execution of the loop!! Need to investigate why! Maybe many hearings don't have written hearing input? As we learned by emails, the written hearing input lies in archives and needs a request to be opened.
+#or the function is not really relevant as it only retrieves the same variables as get_hearing_input (input text and title most relevant)
+for(x in unique(allsessionshearings$hearing_id)){
+  it <- 100*(which(unique(allsessionshearings$hearing_id) == x) / length(unique(allsessionshearings$hearing_id)))
+  cat(paste0(sprintf("Progress: %.4f%%             ", it), "\r"))
+  c[[x]] <- get_written_hearing_input(hearingid = x, good_manners = 0)
+}
+
+#place retrievend data in list c
+written_hearing_input <- do.call(rbind, c)
+
+#unnesting data
+written_hearing_input <- written_hearing_input %>% as_tibble() %>% 
+  unnest(cols = hearing_id, committee_id, hearing_input_organization, hearing_input_title, hearing_input_text)
+
+#let's save the dataset we have obtained before continuing
+#You can use getwd() to locate your current folder and create a path
+getwd()
+save(allsessionshearings, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/allsessionhearings.RData")
+save(hearinginput, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/hearinginput.RData")
+save(written_hearing_input, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/written_hearing_input.RData")
+
+load(file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/allsessionhearings.RData")
+load(file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/hearinginput.RData")
+load(file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/written_hearing_input.RData")
+#for now I will continue especially with the data from hearinginput, which has the hearing title and text to see where UNA is mentioned
+
+#loading relevant packages again
+library(tidyverse)
+
+#creating a new object by selecting relevant variables and merging text and titles of hearings into one variable
+hearingtext <- hearinginput %>% 
+  select(hearing_id, hearing_input_organization, committee_id, hearing_input_date, hearing_input_text, hearing_input_title) %>% 
+  mutate(fulltext = paste(hearing_input_title, hearing_input_text))
+
+#Test: now we can use the fulltext variable to check for FN sambandet and other keywords
+mentionsFNS <- hearingtext %>% 
+  filter(str_detect(fulltext, "FN-sambandet"))
+#we observe three mentions in hearings
+
+#In a more professional manner we first homogenize the text to make our search easier
+library(stringr)
+
+#changing all text to lower case and removing html patterns
+hearingtext <- hearingtext %>% 
+  mutate(fulltext_lo = str_remove_all(str_to_lower(fulltext), pattern = "<p>"))
+
+#removing all text that is written in <> parentheses (leftover html code)
+hearingtext <- hearingtext %>% 
+  mutate(fulltext_lo = str_remove_all(fulltext_lo, pattern = "<.*>"), 
+         fulltext_lo = str_replace_all(fulltext_lo, pattern =  "\\s*\\([^\\)]+\\\\", ""))
+
+#Test: we can now check for keywords
+sum(str_detect(hearingtext$fulltext_lo,"fn-sambandet"))
+#1 results 
+#we observe less mentions here, as only hearing text and title are searched (FN Sambandet as the hearing organisation is omitted)
+
+sum(str_detect(hearingtext$fulltext_lo, "utdanning for bærekraftig utvikling"))
+#0 results
+
+#this next code prints all the text input that contains "4.7"
+hearingtext$fulltext[str_which(hearingtext$fulltext_lo, "4.7")]
+
+#this string detects whether or not an input contains "samfunnsøokonomisk"
+str_detect(hearingtext$fulltext_lo,"samfunnsøkonomisk")
+# and this one counts the mentions again
+sum(str_detect(hearingtext$fulltext_lo, "samfunnsøkonomisk"))
+#53 mentions
+
+#Now we prepare plotting by creating new variables that unite all the keyword searches after priority
+keywordmentions <- hearingtext %>% 
+  mutate(priority_level = case_when(
+    str_detect(fulltext_lo, "fn-sambandet") ~ "1",
+    str_detect(fulltext_lo, " una ") ~ "1", #find another funtion as this find all words that include "una"
+    str_detect(fulltext_lo, "united nations association") ~ "1",
+    str_detect(fulltext_lo, "fn sambandet") ~ "1",
+    str_detect(fulltext_lo, " ubu ") ~ "2",
+    str_detect(fulltext_lo, "utdanning for bærekraftig utvikling") ~ "2",
+    str_detect(fulltext_lo, "utdanning i bærekraftig utvikling") ~ "2",
+    str_detect(fulltext_lo, "utdanning om bærekraftig utvikling") ~ "2",
+    str_detect(fulltext_lo, "education for sustainable development") ~ "2",
+    str_detect(fulltext_lo, "education for sustainability") ~ "2",
+    str_detect(fulltext_lo, " esd ") ~ "2",
+    str_detect(fulltext_lo, "delmål 4.7") ~ "2",
+    str_detect(fulltext_lo, "mål 4.7") ~ "2",
+    str_detect(fulltext_lo, "bærekraftsmål 4") ~ "2",
+    str_detect(fulltext_lo, " sdg 4 ") ~ "2",
+    str_detect(fulltext_lo, " unicef ") ~ "3",
+    str_detect(fulltext_lo, " ilo ") ~ "3",
+    str_detect(fulltext_lo, " unesco ") ~ "3",
+    str_detect(fulltext_lo, " who ") ~ "3",
+    str_detect(fulltext_lo, " wfp ") ~ "3",
+    str_detect(fulltext_lo, " undp ") ~ "3",
+    str_detect(fulltext_lo, " unep ") ~ "3",
+    str_detect(fulltext_lo, " fao ") ~ "3",
+  ))
+#keywordmentions includes NAs and is therefore not fit for presentation
+
+  
+#therefore we create a subset that only contains the rows with relevant mentions
+keyword_subset <- keywordmentions %>% 
+  filter(str_detect(fulltext_lo, "fn-sambandet")|
+           str_detect(fulltext_lo, " una ")| #find another funtion as this find all words that include "una"
+           str_detect(fulltext_lo, "united nations association")|
+           str_detect(fulltext_lo, "fn sambandet")|
+           str_detect(fulltext_lo, " ubu ")|
+           str_detect(fulltext_lo, "utdanning for bærekraftig utvikling")|
+           str_detect(fulltext_lo, "utdanning i bærekraftig utvikling")|
+           str_detect(fulltext_lo, "utdanning om bærekraftig utvikling")|
+           str_detect(fulltext_lo, "education for sustainable development")|
+           str_detect(fulltext_lo, "education for sustainability")|
+           str_detect(fulltext_lo, " esd ")|
+           str_detect(fulltext_lo, "delmål 4.7")|
+           str_detect(fulltext_lo, "mål 4.7")|
+           str_detect(fulltext_lo, "bærekraftsmål 4")|
+           str_detect(fulltext_lo, " sdg 4 ")|
+           str_detect(fulltext_lo, " ilo ")|
+           str_detect(fulltext_lo, " unesco ")|
+           str_detect(fulltext_lo, " who ")|
+           str_detect(fulltext_lo, " fao ")|
+           str_detect(fulltext_lo, " wfp ")|
+           str_detect(fulltext_lo, " undp ")|
+           str_detect(fulltext_lo, " unep ")|
+           str_detect(fulltext_lo, " unicef "))
+  
+#now we create a full subset called "subfullset" in which we include hearing ids beside the keyword_subset variables
+#changing the full subset to contain hearing ids and session ids selected from allsessionhearings dataset
+?left_join
+subfullset <- allsessionshearings %>% 
+  select(hearing_id, session_id)
+
+#now we join the full subset together with the keyword_subset
+keyword_subset <- left_join(keyword_subset, subfullset, by = c("hearing_id"))
+
+#this table is just to 
+table(allsessionshearings$session_id)
+
+
+#with newkeywordmentions containing session ids and keywordmentions we can now plot
+
+#now we are trying to plot these variables
+ggplot(keywordmentions, aes(x = committee_id, fill = priority_level)) + 
+  geom_bar() + 
+  theme_bw()
+#keywordmentions includes NAs and is therefore not fit for presentation
+
+
+#creating a color palette for colorblind people as an object for later use
+safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", 
+                             "#117733", "#332288", "#AA4499", 
+                             "#44AA99", "#999933", "#882255", 
+                             "#661100", "#6699CC", "#888888")
+
+#plotting only the relevant keyword mentions after priority
+ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) + 
+  geom_bar(position = position_dodge(width = 0.8)) +
+  scale_fill_brewer(palette = "Paired") +
+  labs(title = "Keyword Mentions in Hearings",
+       x = "Storting Sessions",
+       y = "Number of Mentions",
+       fill = "Priority level",
+       caption = "Mentions after priority level: 
+       1 - direct mentions of UNA and related terms 
+       2 - mentions of terms related to SDG 4.7 on education
+       3 - mentions of associated UN Organisations") +
+  theme(legend.position = "right", legend.fill = "Priority Level",
+        plot.caption.position = "plot") +
+  theme_light() +
+  coord_cartesian(ylim = c(0,5))
+
+save(keyword_subset, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/keyword_subset.Rdata")
+load(file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/keyword_subset.Rdata")
+#further analysis
+```
+
+# Social Media
+
+# Decisions
+
+# Keywords
+
+
+Vizualisation of search words/related words
+
+When creating a list of the different search words/possible relevant words I found it
+
+practical to work in Excel as part of the development and revision of the table
+
+The results can be converted into R format, using packages that read Excel files and the 
+formatting in Excel
+xlsx format readed by the function
+
+Synonymordtabell <- read_excel("C:/Users/marku/OneDrive - Universitetet i Oslo/Synonymordtabell - kopi.xlsx")
+NA simply means empty cells in the Excel documents, as there were different number of words under each of the categories
+
+
+```{r, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("C:/Users/marku/Downloads/Excel III.jpg")
+```
+
+
+```{r, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("C:/Users/marku/Downloads/R.verson of table.jpg")
+```
+
+
+View(Synonymordtabell)
+
+Under the “Eksempler på utfordringen med søkeord»-column in the dataset/table, some examples are highlighted that also applies to many of the other words in the table. 
+The challenge when searching for words is partly that there exists so many synonyms that are identical or similar in content. Different actors in politics in general incl. Stortinget may say or refer to the same (possibly issues related to FN-sambandet) in different ways.
+•	If I enter search word «utdanning for bærekraftig utvikling» I will get results where for is used, but not results where the politicians or people have used “utdanning om bærekraftig utvikling” or “utdanning i bærekraftig utvikling”
+-	Utdanning for bærekraftig utvikling
+-	Utdanning i bærekraftig utvikling
+-	Utdanning om bærekraftig utvikling
+-	UBU
+ 
+•	In terms of related UN organisations like WFP one can search for 
+-	WFP
+-	World Food Programme
+-	FNs matvareprogram 
+
+•	The same applies to ILO: 
+-	ILO, International labor organization
+-	international labour organization
+-	international labor organisation
+-	international labour organisation
+-	den internasjonale arbeidslivsorganisasjonen.   
+
+Will get different results in “antall treff” when varying these nuances in the search words 
+
+FYI: has recoded terms in R so that searches can be done only with small letters, hence no discussion of the variation of capital and small letters, which in some search settings and applications could be an issue 
+•	If not recoded R would treat search terms differently with and without capital letters. 
+
+A challenge when using the search appliance at Stortinget’s website is that the number of occurrences of FN-sambandet and other organisations can represent when those organisations is the source of speech or text, rather than FN-sambandet being mentioned by others. The Stortingsscrape code will not include those occurrences wherein 
+
+
+
+Another issue with applying the search words in our R code is that the Stortingsscrape-package we have based our solutions on cannot import skriftlige innspill (written inputs), so that some results are omitted. For example “utdanning for bærekraftig utvikling” and “delmål 4.7” was used by another actor than FN-Sambandet in a written input from Naturfagsenteret v/ Universitetet i Oslo”. Possibly, that is a challenge in other applications if for example many usages of words occurred in such written inputs. 
+
+
+In the end we chose to not apply all possible search words due to shortage of time
+To run the codes searching through vast amounts of documents in Stortinget will take more time the more words and word inflections that were used. Below is a picture with the search words we chose to apply in our R codes. Note that they are only a subset of the words shown in the preceding Excel-overview of the search words. 
+
+The priority of words, as reflected in the various plots, are shown by numbers, wherein 1 stands for the highest priority of words. First prirority was how often FN-sambandet was used, educational terms (utdanning for bærelraftig utvikling etc..), and priority3 reflects other related terms. We stopped short of exploring all possibly related terms that could reside inside priority 2 and 3 due to the restraints of time and machine capacity in running the elaborate codes. See below for the terms we used in the codes: 
+
+
+
+
+```{r, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("C:/Users/marku/Downloads/Illustrasjon i R med valgte søkeord.jpg")
+```
+
+
+
+
