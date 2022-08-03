@@ -1485,7 +1485,7 @@ This is a step by step guide to scraping the hearings for info on FN-Sambandet,
 and related priority words
 
 
-```{r, eval=FALSE}
+```{r, eval= TRUE}
 #library in relevant packages
 library(tidyverse)
 library(tidytext)
@@ -1494,19 +1494,16 @@ library(quanteda)
 install.packages("stm")
 library(stm)
 library(tidyr)
-```
 
 
-```{r}
 #library in the stortingpackage
 library(stortingscrape)
 
-```{r, eval=false}
 #there are three relevant functions for hearings. With the questionmark we learn more about them
 ?get_session_hearings()
 ?get_hearing_input()
 ?get_written_hearing_input()
-```
+
 
 #before running one of these functions, we want to get all parliament sessions and specify that we only scrape from 2011 onwards
 #therefore we create an object for the sessions and get all parliament sessions
@@ -1747,7 +1744,12 @@ ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) +
 save(keyword_subset, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/keyword_subset.Rdata")
 load(file = "cleaned docs/keyword_subset.Rdata")
 #further analysis
+
+
+
 ```
+
+
 
 # Social Media
 
