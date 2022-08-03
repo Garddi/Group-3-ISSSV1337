@@ -1830,4 +1830,98 @@ knitr::include_graphics("C:/Users/marku/Downloads/Illustrasjon i R med valgte s√
 
 
 
+# Scraping facebook and Instagram
+## - A guide with code
+
+Due to the strict privacy policies of Facebook, one must have admin access to the pages one wish to scrape. Since we do not have access to any of FN-sambandets social media accounts, we have structured the code with notes on what they do, to be used by the admin of these accounts.
+
+
+When you have created an app through [Meta for developer](https://developers.facebook.com/), which is connected to a  facebook account containing admin access to a public facebook page, you will be able to access your token. The token is the key to accessing the Facebook API.
+
+
+Below are listed to two packages we will use 
+```{r, eval=FALSE}
+library(Rfacebook)
+library(instaR)
+```
+*Functions used in this guide is ones that are most useful for FN-sambandet.*  
+*For full list of functions from these packages see [Rfacebook](https://cran.r-project.org/web/packages/Rfacebook/Rfacebook.pdf) and [InstaR](https://cran.r-project.org/web/packages/instaR/instaR.pdf).*
+
+## Facebook
+
+You can find you temporary token in the "Graph API explorer" under "tools". 
+These tokens expires after two hours. 
+*Note: The token included is just to show of the token will look like. It is not functional.*
+
+```{r, eval=FALSE}
+Token <- "EAAGEubsXctYBAOT1lUatovZCBs0GFQZA5ml43Dnh5k3lIDa0UmDm8qMuxAMaZCtStodH0HBBgwzBR1CniWnAnLZAyKHAzdKabnnw5EiX4pZBFwg38TYCnlSUtGegWYbSdtJX79YJ8bT8eElFr5OWheiAXmmdr48HyTBIA2JTggFZCb11Y1iYzvpeUnZA3V3DQx6J15AcaqrtQZDZD"
+```
+
+This code creates two values, the first for todays date, and the second for the date exactly one year ago. By using these we are able to select posts and interactions that have occured within the last year. This can of course be changes to the desired values. 
+
+```{r, eval=FALSE}
+date1<-Sys.Date()-365
+date2<-Sys.Date()
+```
+
+
+What would be the most useful code for scraping data on interactions would be getInsights. This retrieves information from the 
+```{r, eval=FALSE}
+Insights <- getInsights(object_id='FN-sambandet', #This could also be switched out with a id of a spesicif post.
+                        token = Token, 
+                        metric= c('page_engaged_users','page_impressions'), #Here we type what exactly we want to collect. To see full list of which metrics you are able to spesify here check out: https://developers.facebook.com/docs/graph-api/reference/v14.0/insights
+                        period = c('lifetime','day'),
+                        parms = "&since=date1&until=date2") #choosing to scrape from the last year.
+```
+
+GetReactions retrives the reactions users had to one or more post. getShares retrives post containg a sharing of one or more of your posts. Collecting this data could be useful to examine posts that have received a larger number of negative response, and  
+```{r, eval=FALSE}
+Reactions <- getReactions(post = "https://fb.watch/eG7vqzZLUj/", #link to the post we wish to scrape. This is FN-sambandets current pinned post.
+             token = Token,
+             verbose = TRUE, api = NULL)
+
+Shares <- getShares(post = "https://fb.watch/eG7vqzZLUj/", #Again using the pinned post.
+                    token = Token,
+                    n = 100) #choosing to get the first 100 shares.
+```
+
+
+
+## Instagram
+
+The idea behind scraping instagram is the same as scraping facebook. This would allow you to track and measure engagements on the post you 
+
+The process of obtain the token needed to scrape your Instagram data, is quite similar as obtaining the facebook token. 
+```{r, eval=FALSE}
+TokenInsta <- "IGQVJWS2VLOUoxbFVhZAWd2bTU4TU4xY2ZApRVJ0WDM3akFuWnV5OGtwSXphVFVaTE5yREJTUUY0ZAHpBRVJQdThXX1RlcGhuOUk0TExvS3NaSklKV0V2SHRRei00Q01YX0Y5MTRSUHYtaC1SdUNobS1BWQZDZD"
+```
+
+getFollowers retrives a list of followers, and put it in a dataframe. This data could potentially be used to crosscheck with members of parlament, or potential  *influencers* whos could bring awareness to your cause. 
+```{r, eval=FALSE}
+Followers <- getFollowers(username = "fnsambandet",
+                        token = TokenInsta , 
+                        userid = NULL, 
+                        verbose = TRUE)
+```
+
+
+The function getComments to retrieve comments from one or more post, and place them in a dataset. 
+```{r, eval=FALSE}
+FNS <- getUserMedia(username = "fnsambandet",
+                    token = TokenInsta) #This saves your profile as an object, making it easier to implement into other codes.
+
+comments <- getComments(FNS$id[Cgv3mNjqhvk], #This code within the brackets are the ID of a randome IG-post from FN-samabndet. You will find this in the link when using IG in a browser.
+            token = TokenInsta, 
+            verbose = TRUE)
+```
+
+The function getTagCount gives the number of times a hashtag has been used or commented on a post.
+```{r, eval=FALSE}
+Hashtags <- getTagCount(tag = "fnsambandet", #This could also be changed to try out different hashtags related to your work.
+                        token = TokenInsta)
+```
+
+
+This walkthrough on how to scrape the social media profiles retrieves datasets for each function. These datasets would be used further to conduct a analysis of the engagement you receive on social media, and from whom. 
+
 
