@@ -63,6 +63,80 @@ Sys.setlocale(category = "LC_ALL", "")
 
 Due to the large corpus that would arise from joining all documents, and the severe lack of coherent genre textuality, and to the unique opportunities afforded by each form of retrievable information, we decided to split up our work, and pursue separate roads of inquiry based on each section. 
 
+# Keywords
+
+
+Vizualisation of search words/related words
+
+When creating a list of the different search words/possible relevant words I found it
+
+practical to work in Excel as part of the development and revision of the table
+
+The results can be converted into R format, using packages that read Excel files and the 
+formatting in Excel
+xlsx format readed by the function
+
+Synonymordtabell <- read_excel("C:/Users/marku/OneDrive - Universitetet i Oslo/Synonymordtabell - kopi.xlsx")
+NA simply means empty cells in the Excel documents, as there were different number of words under each of the categories
+
+
+```{r, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("Images/Excel III.jpg")
+```
+
+
+```{r, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("Images/R.verson of table.jpg")
+```
+
+
+View(Synonymordtabell)
+
+Under the “Eksempler på utfordringen med søkeord»-column in the dataset/table, some examples are highlighted that also applies to many of the other words in the table. 
+The challenge when searching for words is partly that there exists so many synonyms that are identical or similar in content. Different actors in politics in general incl. Stortinget may say or refer to the same (possibly issues related to FN-sambandet) in different ways. Also, related terms might seem tied to the UNAs work or interest, while in reality simply being catchy political terms without connection to the goal of this study.
+•	If I enter search word «utdanning for bærekraftig utvikling» I will get results where for is used, but not results where the politicians or people have used “utdanning om bærekraftig utvikling” or “utdanning i bærekraftig utvikling”
+-	Utdanning for bærekraftig utvikling
+-	Utdanning i bærekraftig utvikling
+-	Utdanning om bærekraftig utvikling
+-	UBU
+ 
+•	In terms of related UN organisations like WFP one can search for 
+-	WFP
+-	World Food Programme
+-	FNs matvareprogram 
+
+•	The same applies to ILO: 
+-	ILO, International labor organization
+-	international labour organization
+-	international labor organisation
+-	international labour organisation
+-	den internasjonale arbeidslivsorganisasjonen.   
+
+Will get different results in terms of mentions when varying these nuances in the search words 
+
+FYI: has recoded terms in R so that searches can be done only with small letters, hence no discussion of the variation of capital and small letters, which in some search settings and applications could be an issue 
+•	If not recoded R would treat search terms differently with and without capital letters. 
+
+A challenge when using the search appliance at Stortinget’s website is that the number of occurrences of FN-sambandet and other organisations can represent when those organisations is the source of speech or text, rather than FN-sambandet being mentioned by others. The Stortingsscrape code will not include those occurrences wherein 
+
+
+
+Another issue with applying the search words in our R code is that the Stortingsscrape-package we have based our solutions on cannot import skriftlige innspill (written inputs), so that some results are omitted. For example “utdanning for bærekraftig utvikling” and “delmål 4.7” was used by another actor than FN-Sambandet in a written input from Naturfagsenteret v/ Universitetet i Oslo”. Possibly, that is a challenge in other applications if for example many usages of words occurred in such written inputs. 
+
+
+In the end we chose to not apply all possible search words due to shortage of time
+To run the codes searching through vast amounts of documents in Stortinget will take more time the more words and word inflections that were used. Below is a picture with the search words we chose to apply in our R codes. Note that they are only a subset of the words shown in the preceding Excel-overview of the search words. 
+
+The priority of words, as reflected in the various plots, are shown by numbers, wherein 1 stands for the highest priority of words. First prirority was how often FN-sambandet was used, educational terms (utdanning for bærelraftig utvikling etc..), and priority3 reflects other related terms. We stopped short of exploring all possibly related terms that could reside inside priority 2 and 3 due to the restraints of time and machine capacity in running the elaborate codes. See below for the terms we used in the codes: 
+
+
+
+
+```{r, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("Images/Søkeord i R.jpg")
+```
+
+
 # Questions 
 
 The questions were scraped, below is the plot drawing the overview of the spreading of mentions of our relevant keywords over the relevant timeframe.
@@ -1791,84 +1865,7 @@ load(file = "cleaned docs/keyword_subset.Rdata")
 ```
 
 
-
-# Social Media
-
-# Decisions
-
-# Keywords
-
-
-Vizualisation of search words/related words
-
-When creating a list of the different search words/possible relevant words I found it
-
-practical to work in Excel as part of the development and revision of the table
-
-The results can be converted into R format, using packages that read Excel files and the 
-formatting in Excel
-xlsx format readed by the function
-
-Synonymordtabell <- read_excel("C:/Users/marku/OneDrive - Universitetet i Oslo/Synonymordtabell - kopi.xlsx")
-NA simply means empty cells in the Excel documents, as there were different number of words under each of the categories
-
-
-```{r, out.width = "80%", fig.align = "center"}
-knitr::include_graphics("C:/Users/marku/Downloads/Excel III.jpg")
-```
-
-
-```{r, out.width = "80%", fig.align = "center"}
-knitr::include_graphics("C:/Users/marku/Downloads/R.verson of table.jpg")
-```
-
-
-View(Synonymordtabell)
-
-Under the “Eksempler på utfordringen med søkeord»-column in the dataset/table, some examples are highlighted that also applies to many of the other words in the table. 
-The challenge when searching for words is partly that there exists so many synonyms that are identical or similar in content. Different actors in politics in general incl. Stortinget may say or refer to the same (possibly issues related to FN-sambandet) in different ways. Also, related terms might seem tied to the UNAs work or interest, while in reality simply being catchy political terms without connection to the goal of this study.
-•	If I enter search word «utdanning for bærekraftig utvikling» I will get results where for is used, but not results where the politicians or people have used “utdanning om bærekraftig utvikling” or “utdanning i bærekraftig utvikling”
--	Utdanning for bærekraftig utvikling
--	Utdanning i bærekraftig utvikling
--	Utdanning om bærekraftig utvikling
--	UBU
- 
-•	In terms of related UN organisations like WFP one can search for 
--	WFP
--	World Food Programme
--	FNs matvareprogram 
-
-•	The same applies to ILO: 
--	ILO, International labor organization
--	international labour organization
--	international labor organisation
--	international labour organisation
--	den internasjonale arbeidslivsorganisasjonen.   
-
-Will get different results in terms of mentions when varying these nuances in the search words 
-
-FYI: has recoded terms in R so that searches can be done only with small letters, hence no discussion of the variation of capital and small letters, which in some search settings and applications could be an issue 
-•	If not recoded R would treat search terms differently with and without capital letters. 
-
-A challenge when using the search appliance at Stortinget’s website is that the number of occurrences of FN-sambandet and other organisations can represent when those organisations is the source of speech or text, rather than FN-sambandet being mentioned by others. The Stortingsscrape code will not include those occurrences wherein 
-
-
-
-Another issue with applying the search words in our R code is that the Stortingsscrape-package we have based our solutions on cannot import skriftlige innspill (written inputs), so that some results are omitted. For example “utdanning for bærekraftig utvikling” and “delmål 4.7” was used by another actor than FN-Sambandet in a written input from Naturfagsenteret v/ Universitetet i Oslo”. Possibly, that is a challenge in other applications if for example many usages of words occurred in such written inputs. 
-
-
-In the end we chose to not apply all possible search words due to shortage of time
-To run the codes searching through vast amounts of documents in Stortinget will take more time the more words and word inflections that were used. Below is a picture with the search words we chose to apply in our R codes. Note that they are only a subset of the words shown in the preceding Excel-overview of the search words. 
-
-The priority of words, as reflected in the various plots, are shown by numbers, wherein 1 stands for the highest priority of words. First prirority was how often FN-sambandet was used, educational terms (utdanning for bærelraftig utvikling etc..), and priority3 reflects other related terms. We stopped short of exploring all possibly related terms that could reside inside priority 2 and 3 due to the restraints of time and machine capacity in running the elaborate codes. See below for the terms we used in the codes: 
-
-
-
-
-```{r, out.width = "80%", fig.align = "center"}
-knitr::include_graphics("C:/Users/marku/Downloads/Illustrasjon i R med valgte søkeord.jpg")
-```
-# Scraping facebook and Instagram
+# Scraping Facebook and Instagram
 ## - A guide with code
 
 Due to the strict privacy policies of Facebook, one must have admin access to the pages one wish to scrape. Since we do not have access to any of FN-sambandets social media accounts, we have structured the code with notes on what they do, to be used by the admin of these accounts.
@@ -1885,7 +1882,7 @@ library(instaR)
 *Functions used in this guide is ones that are most useful for FN-sambandet.*  
 *For full list of functions from these packages see [Rfacebook](https://cran.r-project.org/web/packages/Rfacebook/Rfacebook.pdf) and [InstaR](https://cran.r-project.org/web/packages/instaR/instaR.pdf).*
 
-## Facebook
+# Facebook
 
 You can find you temporary token in the "Graph API explorer" under "tools". 
 These tokens expires after two hours. 
@@ -1963,7 +1960,7 @@ This walkthrough on how to scrape the social media profiles retrieves datasets f
 
 
 
-## DECISIONS/ VEDTAK 
+# DECISIONS/ VEDTAK 
 
 First get all legislations in the Norwegian Parlament since 2011 with get_session_decisions
 
@@ -1989,7 +1986,7 @@ for(x in unique(session_storting$id)){
 
 
 
-## Findig how many times FN-sambandet and their work with the SDG 4,7 "Utdanning for bærekraftig utvikling" are mentioned in legisaltions
+### Findig how many times FN-sambandet and their work with the SDG 4,7 "Utdanning for bærekraftig utvikling" are mentioned in legisaltions
 
 
 ```{r, eval=FALSE}
@@ -2158,7 +2155,7 @@ decision_tokens <- decision_tokens %>%
 ```
 
 
-# Stemming the words
+## Stemming the words
 
 ```{r, eval=FALSE}
 decision_tokens <- decision_tokens %>%
@@ -2362,7 +2359,7 @@ glimpse(topic_assignment)
 
 
 
-### TWITTER
+# TWITTER
 
 
 
