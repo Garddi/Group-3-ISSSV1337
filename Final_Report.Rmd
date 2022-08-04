@@ -1788,7 +1788,7 @@ ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) +
   theme_light() +
   coord_cartesian(ylim = c(0,5))
 
-save(keyword_subset, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/keyword_subset.Rdata")
+save(keyword_subset, file = "cleaned docs/keyword_subset.Rdata")
 load(file = "cleaned docs/keyword_subset.Rdata")
 #further analysis
 
