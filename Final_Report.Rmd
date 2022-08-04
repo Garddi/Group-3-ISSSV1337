@@ -1618,7 +1618,7 @@ allsessionshearings <- allsessionshearings %>% as_tibble() %>%
 
 #no we find a large dataset with a lot of variables and a good overview over hearings in our allsessionhearings object
 #as we now know the hearing ids, we can run the other two functions
-
+```{r, eval=FALSE}
 ?get_hearing_input
 #First, running a loop to retrieve hearing inputs. I am amending the loop according to where the hearing id is found and what arguments the function demands me to specify.
 #I am also directing the data towards list b.
@@ -1637,6 +1637,7 @@ get_hearing_input(hearingid = "10004183")
 
 #place the retrieved data from list b into another object we can work with
 hearinginput <- do.call(rbind, b)
+```
 
 #unnesting again. I can choose which variables are relevant and leave the rest out. In case I want to include e.g. response date at a later stage, I have to amend the code here.
 #You can check all variables in the hearinginput object
@@ -1697,6 +1698,9 @@ hearingtext <- hearingtext %>%
   mutate(fulltext_lo = str_remove_all(fulltext_lo, pattern = "<.*>"), 
          fulltext_lo = str_replace_all(fulltext_lo, pattern =  "\\s*\\([^\\)]+\\\\", ""))
 
+
+```{r, eval=FALSE} 
+
 #Test: we can now check for keywords
 sum(str_detect(hearingtext$fulltext_lo,"fn-sambandet"))
 #1 results 
@@ -1755,6 +1759,8 @@ sum(str_detect(hearingtext$fulltext_lo, "samfunnsøkonomisk"))
 
 #As we see there is a high level of discrepancy between different mentions depending on how related or not they are to our specific goal - Thus, we have prioritized, depending on relevance. And labeled according to three priority levels. 
 
+```
+  
 #Now we prepare plotting by creating new variables that unite all the keyword searches after priority (1-3)
 keywordmentions <- hearingtext %>% 
   mutate(priority_level = case_when(
@@ -1856,7 +1862,7 @@ ggplot(keyword_subset, aes(x = session_id, fill = priority_level)) +
   theme_light() +
   coord_cartesian(ylim = c(0,5))
 
-save(keyword_subset, file = "C:/Users/hanne/Desktop/Coding R and Python/summer course/Group-3-ISSSV1337/cleaned docs/keyword_subset.Rdata")
+save(keyword_subset, file = "cleaned docs/keyword_subset.Rdata")
 load(file = "cleaned docs/keyword_subset.Rdata")
 #further analysis
 
